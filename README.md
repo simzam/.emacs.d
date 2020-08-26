@@ -1,0 +1,1 @@
+Repository for holding configuration files for Emacs. Meant to ease synchronization of Emacs over several computers.
