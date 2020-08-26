@@ -35,8 +35,8 @@
              (list "\\(.+/\\)*\\(.*?\\)" (expand-file-name "\\2" my-auto-save-dir))
              t)
 
-;; (require 'use-package-ensure)
-;; (setq use-package-always-ensure t)
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
 
 (setq backup-by-copying t
       backup-directory-alist
@@ -49,7 +49,8 @@
 
 (load-theme 'misterioso)
 
-(use-package ace-window(global-set-key (kbd "M-p") 'ace-window)
+(use-package ace-window)
+(global-set-key (kbd "M-p") 'ace-window)
 
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
