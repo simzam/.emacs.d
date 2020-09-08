@@ -35,8 +35,8 @@
              (list "\\(.+/\\)*\\(.*?\\)" (expand-file-name "\\2" my-auto-save-dir))
              t)
 
-(require 'use-package-ensure)
-(setq use-package-always-ensure t)
+;; (require 'use-package-ensure)
+;; (setq use-package-always-ensure t)
 
 (setq backup-by-copying t
       backup-directory-alist
@@ -46,8 +46,14 @@
       kept-old-versions 3
       version-control t)
 
-
 (load-theme 'misterioso)
+
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable)
+  :config
+  (setq elpy-rpc-python-command "python3"))
 
 (use-package ace-window)
 (global-set-key (kbd "M-p") 'ace-window)
@@ -191,8 +197,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   (quote
+    ("/home/zam/Desktop/.org/project_euler.org" "/home/zam/Desktop/.org/concrete_mathematics.org" "/home/zam/Desktop/.org/coursera.org" "/home/zam/Desktop/.org/handle.org" "/home/zam/Desktop/.org/orgmode_tutorial.org" "/home/zam/Desktop/.org/sykkel.org" "/home/zam/Desktop/.org/velleman.org" "/home/zam/Desktop/.org/week.org" "/home/zam/Desktop/.org/year.org")))
  '(package-selected-packages
-   '(zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window)))
+   (quote
+    (virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
