@@ -1,19 +1,24 @@
-;;; init file ==="config file for emacs.
+;;; config file for emacs.
+;;; last updated: Tue Feb 16 16:27:14 2021
 
 (setq user-full-name "Simon Iversen")
 (setq user-mail-address "simon.iversen@protonmail.com")
 
-;;; Code:
+;; removed keyboard shortcut to avoid accidentally killing emacs
 (global-set-key (kbd "C-x C-c") 'delete-frame)
 
 (tool-bar-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq inhibit-startup-screen t)
 (setq ring-bell-function 'ignore)
+(setq make-backup-files nil)
 
+(load-theme 'wheatgrass)
 
-;;(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(require 'package)                      ;
+;; wrap lines when in text modes.
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
+(require 'package)
 (package-initialize)
 
 (setq package-enable-at-startup nil)
@@ -25,55 +30,73 @@
   (package-install 'use-package))
 
 
-(defvar my-auto-save-dir
-  (file-name-as-directory (expand-file-name
-			   "autosave" user-emacs-directory)))
-(unless (file-exists-p my-auto-save-dir)
-  (make-directory my-auto-save-dir))
+(use-package iedit
+  :ensure t
+  )
 
-(add-to-list 'auto-save-file-name-transforms
-             (list "\\(.+/\\)*\\(.*?\\)" (expand-file-name "\\2" my-auto-save-dir))
-             t)
 
-;; (require 'use-package-ensure)
-;; (setq use-package-always-ensure t)
+(use-package python
+  :mode ("\\.py\\'" . python-mode)
+        ("\\.wsgi$" . python-mode)
+  :interpreter ("python" . python-mode)
 
-(setq backup-by-copying t
-      backup-directory-alist
-      `((".*" . ,(expand-file-name "backups" user-emacs-directory)))
-      delete-old-versions t
-      kept-new-versions 6
-      kept-old-versions 3
-      version-control t)
+  :init
+  (setq-default indent-tabs-mode nil)
 
-(load-theme 'misterioso)
+  :config
+  (setq python-indent-offset 4)
+  (setq python-indent-guess-indent-offset-verbose nil))
 
+
+;; TODO fix python config
 (use-package elpy
   :ensure t
+  ;;:mode ("\\.py\\'" . python-mode)
+  ;;         ("\\.wsgi$" . python-mode)
   :init
   (elpy-enable)
+
   :config
-  (setq elpy-rpc-python-command "python3"))
+  (setq elpy-rpc-python-command "python3")
+  )
 
-(use-package ace-window)
-(global-set-key (kbd "M-p") 'ace-window)
 
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
-(use-package undo-tree)
-(global-undo-tree-mode 1)
-(global-set-key (kbd "C-q") 'undo)
-(global-set-key (kbd "C-S-q") 'undo-tree-redo)
-(undo-tree-mode 1)
+(use-package ace-window
+  :ensure t
+  :config
+  (global-set-key (kbd "M-p") 'ace-window)
+  )
+
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode 1)
+  (global-set-key (kbd "C-q") 'undo)
+  (global-set-key (kbd "C-S-q") 'undo-tree-redo)
+  (undo-tree-mode 1)
+  )
 
 (use-package flycheck
+  :ensure t
   :init
-  (global-flycheck-mode))
+  (global-flycheck-mode)
+  )
 
+(use-package tex
+  :ensure auctex
+  :init
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (TeX-fold-mode 1)))
+  ;; to use pdfview with auctex
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+    TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+    TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
 
-;(use-package auctex)
-(add-hook 'LaTeX-mode-hook (lambda ()
-                             (TeX-fold-mode 1)))
+  ;; to have the buffer refresh after compilation
+  (add-hook 'TeX-after-compilation-finished-functions
+        #'TeX-revert-document-buffer)
+  )
 
 
 (use-package org
@@ -85,11 +108,10 @@
   (global-set-key (kbd "C-c a") 'org-agenda)
   (global-set-key (kbd "C-c c") 'org-capture)
 
-  
   (setq org-refile-targets
         '((nil :maxlevel . 3)
           (org-agenda-files :maxlevel . 3)))
-  
+
   (setq org-support-shift-select t)
 
   (setq org-columns-default-format "%50ITEM(Task) %6CLOCKSUM %25TIMESTAMP_IA")
@@ -119,14 +141,33 @@
   )
 
 
-(use-package magit
-  :bind (("C-x g" . magit-status)))
+;; TODO: Setup magit
+;; ;; essentials
+;; (global-set-key (kbd "s-m m") 'magit-status)
+;; (global-set-key (kbd "s-m j") 'magit-dispatch)
+;; (global-set-key (kbd "s-m k") 'magit-file-dispatch)
+;; ;; a faster way to invoke very common commands
+;; (global-set-key (kbd "s-m l") 'magit-log-buffer-file)
+;; (global-set-key (kbd "s-m b") 'magit-blame)
+
+;; ;; or alternatively
+;; (use-package magit
+;;   :ensure t
+;;   :bind (("s-m m" . magit-status)
+;;          ("s-m j" . magit-dispatch)
+;;          ("s-m k" . magit-file-dispatch)
+;;          ("s-m l" . magit-log-buffer-file)
+;;          ("s-m b" . magit-blame)))
+;; (use-package magit
+;;   :bind (("C-x g" . magit-status)))
 
 
-(use-package delight)
-
+(use-package delight
+  :ensure t
+  )
 
 (use-package helm
+  :ensure t
   :delight
   :bind (("M-x"     . #'helm-M-x))
   :bind (("C-x C-f" . #'helm-find-files))
@@ -139,15 +180,13 @@
   (helm-mode 1)
   )
 
-
-(use-package yasnippet
+1(use-package yasnippet
+  :ensure t
   :config
   (yas-global-mode)
   (yas-reload-all))
 
-
 (use-package yasnippet-snippets)
-
 
 (use-package company
   :delight
@@ -167,7 +206,6 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
-
 (use-package flyspell
   :commands flyspell-mode
   :config
@@ -177,21 +215,6 @@
   (add-hook 'org-mode-hook #'flyspell-mode)
   (add-hook 'prog-mode-hook #'flyspell-prog-mode))
 
-
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-        ("\\.wsgi$" . python-mode)
-  :interpreter ("python" . python-mode)
-
-  :init
-  (setq-default indent-tabs-mode nil)
-
-  :config
-  (setq python-indent-offset 4)
-  (setq python-indent-guess-indent-offset-verbose nil))
-
-
-(use-package jupyter)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -199,13 +222,7 @@
  ;; If there is more than one, they won't work right.
  '(org-agenda-files
    (quote
-    ("/home/zam/Desktop/.org/project_euler.org" "/home/zam/Desktop/.org/concrete_mathematics.org" "/home/zam/Desktop/.org/coursera.org" "/home/zam/Desktop/.org/handle.org" "/home/zam/Desktop/.org/orgmode_tutorial.org" "/home/zam/Desktop/.org/sykkel.org" "/home/zam/Desktop/.org/velleman.org" "/home/zam/Desktop/.org/week.org" "/home/zam/Desktop/.org/year.org")))
+    ("/home/zam/Desktop/.org/project_euler.org" "/home/zam/Desktop/.org/handle.org" "/home/zam/Desktop/.org/orgmode_tutorial.org" "/home/zam/Desktop/.org/sykkel.org" "/home/zam/Desktop/.org/week.org")))
  '(package-selected-packages
    (quote
-    (virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+    (edit slime let-alist pdf-tools org virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
