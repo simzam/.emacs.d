@@ -64,7 +64,7 @@
 (use-package ace-window
   :ensure t
   :config
-  (global-set-key (kbd "M-p") 'ace-window)
+  (global-set-key (kbd "M-p") 'ace-select-window)
   )
 
 (use-package undo-tree
@@ -149,16 +149,15 @@
 ;; (global-set-key (kbd "s-m l") 'magit-log-buffer-file)
 ;; (global-set-key (kbd "s-m b") 'magit-blame)
 
-;; ;; or alternatively
-;; (use-package magit
-;;   :ensure t
-;;   :bind (("s-m m" . magit-status)
-;;          ("s-m j" . magit-dispatch)
-;;          ("s-m k" . magit-file-dispatch)
-;;          ("s-m l" . magit-log-buffer-file)
-;;          ("s-m b" . magit-blame)))
-;; (use-package magit
-;;   :bind (("C-x g" . magit-status)))
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)
+         ("s-m j" . magit-dispatch)
+         ("s-m k" . magit-file-dispatch)
+         ("s-m l" . magit-log-buffer-file)
+         ("s-m b" . magit-blame))
+  )
+
 
 
 (use-package delight
