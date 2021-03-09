@@ -1,5 +1,11 @@
-;;; config file for emacs.
-;;; last updated: Tue Feb 16 16:27:14 2021
+;;; init.el --- An Emacs configuration file.
+;; Author:  simzam
+;; Keywords: config, emacs
+;;; Commentary:
+
+;; 
+
+;;; Code:
 
 (setq user-full-name "Simon Iversen")
 (setq user-mail-address "simon.iversen@protonmail.com")
@@ -29,11 +35,9 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-
 (use-package iedit
   :ensure t
   )
-
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
@@ -87,6 +91,8 @@
   :init
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (TeX-fold-mode 1)))
+
+  :config
   ;; to use pdfview with auctex
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
     TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
@@ -96,7 +102,6 @@
   (add-hook 'TeX-after-compilation-finished-functions
         #'TeX-revert-document-buffer)
   )
-
 
 (use-package org
   :init
@@ -139,16 +144,7 @@
 	)
   )
 
-
-;; TODO: Setup magit
-;; ;; essentials
-;; (global-set-key (kbd "s-m m") 'magit-status)
-;; (global-set-key (kbd "s-m j") 'magit-dispatch)
-;; (global-set-key (kbd "s-m k") 'magit-file-dispatch)
-;; ;; a faster way to invoke very common commands
-;; (global-set-key (kbd "s-m l") 'magit-log-buffer-file)
-;; (global-set-key (kbd "s-m b") 'magit-blame)
-
+;; TODO fix key bindings
 (use-package magit
   :ensure t
   :bind (("C-x g" . magit-status)
@@ -157,8 +153,6 @@
          ("s-m l" . magit-log-buffer-file)
          ("s-m b" . magit-blame))
   )
-
-
 
 (use-package delight
   :ensure t
@@ -180,7 +174,7 @@
 
 (use-package yasnippet
   :ensure t
-  :config
+  :init
   (yas-global-mode)
   (yas-reload-all))
 
@@ -206,20 +200,20 @@
   )
 
 (defun my/python-mode-hook ()
-  (add-to-list 'company-backends 'company-jedi))
-
+  "Strange function to make Jedi work with Company."
+  (add-to-list 'company-backends 'company-jedi)
+  )
 
 ;; small hack too avoid color scheme of company jedi colliding with color scheme of emacs
- (require 'color)
-  
+(require 'color)
  (let ((bg (face-attribute 'default :background)))
    (custom-set-faces
     `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 4)))))
     `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
     `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
     `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-    `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
-
+    `(company-tooltip-common ((t (:inherit font-lock-constant-face)))))
+   )
 
 (use-package flyspell
   :commands flyspell-mode
@@ -228,7 +222,8 @@
         ispell-extra-args '("--sug-mode=ultra"))
   (add-hook 'text-mode-hook #'flyspell-mode)
   (add-hook 'org-mode-hook #'flyspell-mode)
-  (add-hook 'prog-mode-hook #'flyspell-prog-mode))
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+  )
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -241,3 +236,5 @@
  '(package-selected-packages
    (quote
     (edit slime let-alist pdf-tools org virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
+(provide 'init)
+;;; init.el ends here
