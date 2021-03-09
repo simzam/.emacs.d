@@ -44,6 +44,7 @@
   (setq-default indent-tabs-mode nil)
 
   :config
+  (add-hook 'python-mode-hook 'my/python-mode-hook)
   (setq python-indent-offset 4)
   (setq python-indent-guess-indent-offset-verbose nil))
 
@@ -59,8 +60,6 @@
   :config
   (setq elpy-rpc-python-command "python3")
   )
-
-
 
 (use-package ace-window
   :ensure t
@@ -180,7 +179,7 @@
   (helm-mode 1)
   )
 
-1(use-package yasnippet
+(use-package yasnippet
   :ensure t
   :config
   (yas-global-mode)
@@ -204,7 +203,24 @@
   )
 
 (use-package company-box
-  :hook (company-mode . company-box-mode))
+  :hook (company-mode . company-box-mode)
+  )
+
+(defun my/python-mode-hook ()
+  (add-to-list 'company-backends 'company-jedi))
+
+
+;; small hack too avoid color scheme of company jedi colliding with color scheme of emacs
+ (require 'color)
+  
+ (let ((bg (face-attribute 'default :background)))
+   (custom-set-faces
+    `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 4)))))
+    `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+    `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+    `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+    `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
+
 
 (use-package flyspell
   :commands flyspell-mode
