@@ -7,7 +7,7 @@
 
 ;;; Code:
 
-;; TODO: figure out a way to separate personal information into a separate file
+;; loading file containing personal information
 (load-file "./.emacs.d/emacs_p.el")
 
 ;; removed keyboard shortcut to avoid accidentally killing emacs
@@ -39,7 +39,6 @@
   (package-install 'use-package)
   )
 
-;;
 (use-package iedit
   :ensure t
   )
@@ -55,19 +54,16 @@
   :config
   (add-hook 'python-mode-hook 'my/python-mode-hook)
   (setq python-indent-offset 4)
-  (setq python-indent-guess-indent-offset-verbose nil))
+  (setq python-indent-guess-indent-offset-verbose nil)
 
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable)
 
-;; TODO fix python config
-(use-package elpy
-  :ensure t
-  ;;:mode ("\\.py\\'" . python-mode)
-  ;;         ("\\.wsgi$" . python-mode)
-  :init
-  (elpy-enable)
-
-  :config
-  (setq elpy-rpc-python-command "python3")
+    :config
+    (setq elpy-rpc-python-command "python3")
+    )
   )
 
 (use-package ace-window
@@ -88,7 +84,7 @@
 (use-package flycheck
   :ensure t
   :init
-  (global-flycheck-mode)
+  (global-flycheck-mode t)
   )
 
 (use-package tex
@@ -137,6 +133,19 @@
   ;; TODO; update org-capture-templates
   (setq org-capture-templates emacs_p-ORG_TEMPLATES)
   ;;(eval-when-compile (defvar ORG_TEMPLATES)
+
+  :config
+  (use-package org-crypt
+    :init
+    (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+    (setq org-crypt-key nil)
+    :config
+    (org-crypt-use-before-save-magic)
+    )
+  (use-package epa-file
+    :init
+    (epa-file-enable)
+    )
   )
 
 (use-package magit
@@ -193,6 +202,19 @@
   (setq company-tooltip-limit 30)
   (setq company-idle-delay .3)
   (setq company-echo-delay 0)
+  (use-package color
+    :init
+    ;; small hack too avoid color scheme of company jedi colliding with color scheme of emacs
+    (require 'color)
+    (let ((bg (face-attribute 'default :background)))
+      (custom-set-faces
+       `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 4)))))
+       `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+       `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+       `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+       `(company-tooltip-common ((t (:inherit font-lock-constant-face)))))
+      )
+    )
   )
 
 (use-package company-box
@@ -203,17 +225,6 @@
   "Strange function to make Jedi work with Company."
   (add-to-list 'company-backends 'company-jedi)
   )
-
-;; small hack too avoid color scheme of company jedi colliding with color scheme of emacs
-(require 'color)
- (let ((bg (face-attribute 'default :background)))
-   (custom-set-faces
-    `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 4)))))
-    `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-    `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-    `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-    `(company-tooltip-common ((t (:inherit font-lock-constant-face)))))
-   )
 
 (use-package flyspell
   :commands flyspell-mode
@@ -230,19 +241,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files nil)
+ '(org-agenda-files
+   (quote
+    ("/home/zam/Desktop/.org/project_euler.org" "/home/zam/Desktop/.org/handle.org" "/home/zam/Desktop/.org/orgmode_tutorial.org" "/home/zam/Desktop/.org/sykkel.org" "/home/zam/Desktop/.org/week.org")))
  '(package-selected-packages
    (quote
     (edit slime let-alist pdf-tools org virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
 (provide 'init)
 ;;; init.el ends here
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(company-scrollbar-bg ((t (:background "#199919991999"))))
- '(company-scrollbar-fg ((t (:background "#0ccc0ccc0ccc"))))
- '(company-tooltip ((t (:inherit default :background "#0a3d0a3d0a3d"))))
- '(company-tooltip-common ((t (:inherit font-lock-constant-face))))
- '(company-tooltip-selection ((t (:inherit font-lock-function-name-face)))))
