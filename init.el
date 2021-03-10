@@ -21,16 +21,18 @@
 
 (load-theme 'wheatgrass)
 
+(show-paren-mode 1)
+
 ;; wrap lines when in text modes.
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
-;; TODO
+;; TODO read tutorial
 (require 'package)
 (package-initialize)
 
 (setq package-enable-at-startup nil)
 (setq package-archives ())
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 ;; ensures that packages used in this files are installed.
@@ -92,7 +94,6 @@
   :init
   (add-hook 'LaTeX-mode-hook (lambda ()
                                (TeX-fold-mode 1)))
-
   :config
   ;; to use pdfview with auctex
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
@@ -174,17 +175,17 @@
   (use-package helm-xref)
   (use-package helm-rg)
   (require 'helm-config)
-  (helm-mode 1)
+  (helm-mode t)
+  (helm-autoresize-mode t)
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  (global-set-key (kbd "C-x b") 'helm-mini)
   )
-
 
 ;; TODO: read tutorial on yasnippet
 (use-package yasnippet
   :ensure t
   :init
   (yas-global-mode)
-  ;; TODO: fix error "might not be defined at runtime.
-  ;;(yas-reload-all)
   )
 
 (use-package yasnippet-snippets)
@@ -246,6 +247,16 @@
     ("/home/zam/Desktop/.org/project_euler.org" "/home/zam/Desktop/.org/handle.org" "/home/zam/Desktop/.org/orgmode_tutorial.org" "/home/zam/Desktop/.org/sykkel.org" "/home/zam/Desktop/.org/week.org")))
  '(package-selected-packages
    (quote
-    (edit slime let-alist pdf-tools org virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
+    (helm git-commit which-key tomatinho pomodoro powerthesaurus yasnippet edit slime let-alist pdf-tools org virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
 (provide 'init)
 ;;; init.el ends here
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-scrollbar-bg ((t (:background "#199919991999"))))
+ '(company-scrollbar-fg ((t (:background "#0ccc0ccc0ccc"))))
+ '(company-tooltip ((t (:inherit default :background "#0a3d0a3d0a3d"))))
+ '(company-tooltip-common ((t (:inherit font-lock-constant-face))))
+ '(company-tooltip-selection ((t (:inherit font-lock-function-name-face)))))
