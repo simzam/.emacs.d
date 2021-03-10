@@ -7,8 +7,8 @@
 
 ;;; Code:
 
-(setq user-full-name "Simon Iversen")
-(setq user-mail-address "simon.iversen@protonmail.com")
+;; TODO: figure out a way to separate personal information into a separate file
+(load-file "./.emacs.d/emacs_p.el")
 
 ;; removed keyboard shortcut to avoid accidentally killing emacs
 (global-set-key (kbd "C-x C-c") 'delete-frame)
@@ -24,6 +24,7 @@
 ;; wrap lines when in text modes.
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
+;; TODO
 (require 'package)
 (package-initialize)
 
@@ -31,10 +32,14 @@
 (setq package-archives ())
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+;; ensures that packages used in this files are installed.
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
-  (package-install 'use-package))
+  (package-install 'use-package)
+  )
 
+;;
 (use-package iedit
   :ensure t
   )
@@ -98,15 +103,16 @@
     TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
     TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
 
+  ;; TODO: fix errors at bottom of page.
   ;; to have the buffer refresh after compilation
-  (add-hook 'TeX-after-compilation-finished-functions
-        #'TeX-revert-document-buffer)
+  ;;(add-hook 'TeX-after-compilation-finished-functions
+  ;;      #'TeX-revert-document-buffer)
   )
 
 (use-package org
   :init
-  (setq org-directory "~/Desktop")
-  (setq org-agenda-files '("~/Desktop/.org"))
+  (setq org-directory emacs_p-ORG_DIRECTORY)
+  (setq org-agenda-files emacs_p-ORG_AGENDA_FILES)
 
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
@@ -128,23 +134,11 @@
 
   (add-hook 'org-mode-hook 'org-indent-mode)
 
-  (setq org-capture-templates
-	'(("t" "TODO" entry (file ".org/week.org")
-	   "* TODO %? %^G \n  %U" :empty-lines 1)
-	  ("s" "Scheduled TODO" entry (file ".org/week.org")
-	   "* TODO %? %^G \nSCHEDULED: %^t\n  %U" :empty-lines 1)
-	  ("d" "Deadline" entry (file ".org/week.org")
-	   "* TODO %? %^G \n DEADLINE: %^t" :empty-lines 1)
-	  ("p" "Priority" entry (file ".org/week.org")
-	   "* TODO [#A] %? %^G \n  SCHEDULED: %^t")
-	  ("n" "Note" entry (file+headline ".org/.gen.org")
-	   "* %? %^G\n%U" :empty-lines 1)
-	  ("j" "Journal" entry (file+datetree ".org/.p.org")
-	   "* %? %^G\nEntered on %U\n"))
-	)
+  ;; TODO; update org-capture-templates
+  (setq org-capture-templates emacs_p-ORG_TEMPLATES)
+  ;;(eval-when-compile (defvar ORG_TEMPLATES)
   )
 
-;; TODO fix key bindings
 (use-package magit
   :ensure t
   :bind (("C-c g" . magit-status)
@@ -154,10 +148,12 @@
          ("C-c b" . magit-blame))
   )
 
+;; TODO: read tutorial on delight
 (use-package delight
   :ensure t
   )
 
+;; TODO: read tutorial on helm
 (use-package helm
   :ensure t
   :delight
@@ -172,11 +168,15 @@
   (helm-mode 1)
   )
 
+
+;; TODO: read tutorial on yasnippet
 (use-package yasnippet
   :ensure t
   :init
   (yas-global-mode)
-  (yas-reload-all))
+  ;; TODO: fix error "might not be defined at runtime.
+  ;;(yas-reload-all)
+  )
 
 (use-package yasnippet-snippets)
 
@@ -230,11 +230,19 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   (quote
-    ("/home/zam/Desktop/.org/project_euler.org" "/home/zam/Desktop/.org/handle.org" "/home/zam/Desktop/.org/orgmode_tutorial.org" "/home/zam/Desktop/.org/sykkel.org" "/home/zam/Desktop/.org/week.org")))
+ '(org-agenda-files nil)
  '(package-selected-packages
    (quote
     (edit slime let-alist pdf-tools org virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
 (provide 'init)
 ;;; init.el ends here
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-scrollbar-bg ((t (:background "#199919991999"))))
+ '(company-scrollbar-fg ((t (:background "#0ccc0ccc0ccc"))))
+ '(company-tooltip ((t (:inherit default :background "#0a3d0a3d0a3d"))))
+ '(company-tooltip-common ((t (:inherit font-lock-constant-face))))
+ '(company-tooltip-selection ((t (:inherit font-lock-function-name-face)))))
