@@ -147,11 +147,11 @@
 ;; TODO fix key bindings
 (use-package magit
   :ensure t
-  :bind (("C-x g" . magit-status)
-         ("s-m j" . magit-dispatch)
-         ("s-m k" . magit-file-dispatch)
-         ("s-m l" . magit-log-buffer-file)
-         ("s-m b" . magit-blame))
+  :bind (("C-c g" . magit-status)
+         ("C-c j" . magit-dispatch)
+         ("C-c k" . magit-file-dispatch)
+         ("C-c z" . magit-log-buffer-file)
+         ("C-c b" . magit-blame))
   )
 
 (use-package delight
