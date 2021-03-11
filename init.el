@@ -87,6 +87,7 @@
   :ensure t
   :init
   (global-flycheck-mode t)
+  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   )
 
 (use-package tex
@@ -131,9 +132,7 @@
 
   (add-hook 'org-mode-hook 'org-indent-mode)
 
-  ;; TODO; update org-capture-templates
   (setq org-capture-templates emacs_p-ORG_TEMPLATES)
-  ;;(eval-when-compile (defvar ORG_TEMPLATES)
 
   :config
   (use-package org-crypt
@@ -158,12 +157,10 @@
          ("C-c b" . magit-blame))
   )
 
-;; TODO: read tutorial on delight
 (use-package delight
   :ensure t
   )
 
-;; TODO: read tutorial on helm
 (use-package helm
   :ensure t
   :delight
@@ -181,7 +178,6 @@
   (global-set-key (kbd "C-x b") 'helm-mini)
   )
 
-;; TODO: read tutorial on yasnippet
 (use-package yasnippet
   :ensure t
   :init
@@ -237,17 +233,46 @@
   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
   )
 
+(use-package spaceline
+  :ensure t
+  :config
+  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+
+(use-package spaceline-config
+  :ensure spaceline
+  :config
+  (spaceline-helm-mode 1)
+  (spaceline-emacs-theme))
+
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode)
+  :config
+  ;; Allow C-h to trigger which-key before it is done automatically
+  (setq which-key-show-early-on-C-h t)
+  ;; make sure which-key doesn't show normally but refreshes quickly after it is
+  ;; triggered.
+  (setq which-key-idle-delay 10000)
+  (setq which-key-idle-secondary-delay 0.05)
+  (setq which-key-popup-type 'side-window)
+  (setq which-key-side-window-location 'right)
+  (setq which-key-side-window-max-width 0.33)
+  )
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(flycheck-python-flake8-executable "/home/simon/.local/bin/flake8")
+ '(flycheck-python-pylint-executable "/home/simon/.local/bin/pylint")
  '(org-agenda-files
    (quote
     ("/home/zam/Desktop/.org/project_euler.org" "/home/zam/Desktop/.org/handle.org" "/home/zam/Desktop/.org/orgmode_tutorial.org" "/home/zam/Desktop/.org/sykkel.org" "/home/zam/Desktop/.org/week.org")))
  '(package-selected-packages
    (quote
-    (helm git-commit which-key tomatinho pomodoro powerthesaurus yasnippet edit slime let-alist pdf-tools org virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
+    (spaceline elpy helm git-commit which-key tomatinho pomodoro powerthesaurus yasnippet edit slime let-alist pdf-tools org virtualenv zenburn-theme yasnippet-snippets yasnippet-classic-snippets use-package undo-tree magit jupyter helm-xref helm-rg helm-flyspell flycheck delight company-box auctex ahungry-theme ace-window))))
 (provide 'init)
 ;;; init.el ends here
 (custom-set-faces
