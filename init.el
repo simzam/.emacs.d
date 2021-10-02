@@ -7,13 +7,12 @@
 
 ;;; Code:
 
-
-;; keep personal information out of config
-(setq custom-file (concat user-emacs-directory "emacs_p.el"))
-(load custom-file 'noerror)
-
+;; TODO: look over and clean up.
 ;; loading file containing personal information
-(load-file "/home/sim/.emacs.d/emacs_p.el")
+(load-file "/home/sim/.emacs.d/org_p.el")
+
+(setq custom-file (concat user-emacs-directory "org_p.el"))
+(load custom-file 'noerror)
 
 ;; removed keyboard shortcut to avoid accidentally killing emacs
 (global-set-key (kbd "C-x C-c") 'delete-frame)
@@ -72,6 +71,12 @@
               (message "gc-cons-threshold restored to %S"
                        gc-cons-threshold)))
 
+
+(defvar emacs_p-find_dag "~/Desktop/.org/dag.org")
+(defvar emacs_p-find_config "~/.emacs.d/init.el")
+
+
+
 ;; color theme
 (use-package panda-theme
   :ensure t
@@ -83,11 +88,15 @@
   :bind
   (("C-a" . crux-move-beginning-of-line)))
 
-;; Package for fast editing of the same word at the same time.
-(use-package iedit
+(use-package multiple-cursors
   :ensure t
   :config
-  (global-set-key (kbd "C-;") 'iedit))
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  )
+
 
 ;; Package for quickly marking paragraphs, functions, or a other pieces of text
 (use-package expand-region
@@ -189,33 +198,45 @@
 
 (use-package org
   :init
-  (setq org-directory emacs_p-ORG_DIRECTORY)
+  ;; keep personal information out of config
+
+
   (setq org-agenda-files (list org-directory))
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
   (global-set-key (kbd "C-c c") 'org-capture)
-  (setq org-refile-targets
+
+  ;; depth in hierarchy to look for refile headlines
+  (defvar org-refile-targets
         '((nil :maxlevel . 3)
           (org-agenda-files :maxlevel . 3)))
+
   (setq org-support-shift-select t)
-  (setq org-columns-default-format "%50ITEM(Task) %6CLOCKSUM %25TIMESTAMP_IA")
+
+  ;; TODO not started using
+  ;; (setq org-columns-default-format "%50ITEM(Task) %6CLOCKSUM %25TIMESTAMP_IA")
+
   (setq org-todo-keywords
         '((sequence "TODO(t)" "STARTED(s)" "MEETING(m)"  "ISSUE(p)" "INPUTNEEDED(i)" "VERIFY(v)" "|" "SCOPECHANGE(r)" "DONE(d)" "CANCELLED(c)")))
+
   (setq org-tag-alist
         '(("fix" . ?f) ("message" . ?m) ("buy" . ?b) ("read" . ?r)))
+
   (add-hook 'org-mode-hook 'org-indent-mode)
-  (setq org-capture-templates emacs_p-ORG_TEMPLATES)
 
   :config
   ;; scale 1.0 makes the math symbols hard to read.
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
-  (setq org-pomodoro-play-sounds nil)
+
+  (defvar org-pomodoro-play-sounds nil)
+
   (use-package org-crypt
     :init
     (setq org-tags-exclude-from-inheritance (quote ("crypt")))
     (setq org-crypt-key nil)
     :config
     (org-crypt-use-before-save-magic))
+
   (use-package epa-file
     :init
     (epa-file-enable)))
@@ -223,11 +244,12 @@
 
 (use-package magit
   :ensure t
-  :bind (("C-c g" . magit-status)
-         ("C-c j" . magit-dispatch)
-         ("C-c k" . magit-file-dispatch)
-         ("C-c z" . magit-log-buffer-file)
-         ("C-c b" . magit-blame)))
+  :bind
+  (("C-c g" . magit-status)
+   ("C-c j" . magit-dispatch)
+   ("C-c k" . magit-file-dispatch)
+   ("C-c z" . magit-log-buffer-file)
+   ("C-c b" . magit-blame)))
 
 (use-package delight
   :ensure t)
