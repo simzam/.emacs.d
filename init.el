@@ -7,29 +7,33 @@
 
 ;;; Code:
 
-;; ;; loading file containing personal information
-(load-file "./.emacs.d/emacs_p.el")
+
+;; keep personal information out of config
+(setq custom-file (concat user-emacs-directory "emacs_p.el"))
+(load custom-file 'noerror)
+
+;; loading file containing personal information
+(load-file "/home/sim/.emacs.d/emacs_p.el")
 
 ;; removed keyboard shortcut to avoid accidentally killing emacs
 (global-set-key (kbd "C-x C-c") 'delete-frame)
 
-;; avoid setting variables using customize
-(setq custom-file (make-temp-file "emacs-custom"))
-
-(menu-bar-mode -1)
 (tool-bar-mode -1)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq inhibit-startup-screen t)
 (setq ring-bell-function 'ignore)
 (setq make-backup-files nil)
 
-(show-paren-mode 1)
+;; reload file into the same buffer
+(global-set-key (kbd "<f5>") 'revert-buffer)
 
 ;; wrap lines when in text modes.
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
+;; tabs are bad
 (setq-default indent-tabs-mode -1)
 
+;; trailing whitespace is bad
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (require 'package)
@@ -48,33 +52,25 @@
 (use-package benchmark-init
   :ensure t
   :init
-  ;; Increase size of garbage collection during startup
+  ;; increase size of garbage collection during startup
   (setq gc-cons-threshold 10000000)
 
-  ;; Restore after startup
+  ;; restore after startup
   (add-hook 'after-init-hook
             (lambda ()
               (setq gc-cons-threshold 1000000)
               (message "gc-cons-threshold restored to %S"
                        gc-cons-threshold)))
   :config
-  ;; To disable collection of benchmark data after init is done.
+  ;; to disable collection of benchmark data after init is done.
   (add-hook 'after-init-hook 'benchmark-init/deactivate))
 
-  ;; Restore after startup
+  ;; restore after startup
   (add-hook 'after-init-hook
             (lambda ()
               (setq gc-cons-threshold 1000000)
               (message "gc-cons-threshold restored to %S"
                        gc-cons-threshold)))
-
-;; fast way to enter config file
-(defun find-config ()
-  "Find and modify config file."
-  (interactive)
-  (find-file "~/.emacs.d/init.el"))
-
-(global-set-key (kbd "C-c I") 'find-config)
 
 ;; color theme
 (use-package panda-theme
@@ -84,163 +80,27 @@
 
 (use-package crux
   :ensure t
-  :bind (("C-a" . crux-move-beginning-of-line)))
+  :bind
+  (("C-a" . crux-move-beginning-of-line)))
 
+;; Package for fast editing of the same word at the same time.
 (use-package iedit
   :ensure t
   :config
-  (global-set-key (kbd "C-M-;") 'iedit))
+  (global-set-key (kbd "C-;") 'iedit))
 
+;; Package for quickly marking paragraphs, functions, or a other pieces of text
 (use-package expand-region
   :ensure t
   :bind
   ("C-=" . er/expand-region))
 
+;; package for smart handling of delimiters ("(","[", etc.)
 (use-package smartparens
   :ensure t
   :config
+  (show-smartparens-global-mode +1)
   (add-hook 'prog-mode-hook 'smartparens-mode))
-
-;; ;; (use-package python
-;; ;;   :mode ("\\.py\\'" . python-mode)
-;; ;;         ("\\.wsgi$" . python-mode)
-;; ;;   :interpreter ("python" . python-mode)
-
-;; ;;   :init
-;; ;;   (setq-default indent-tabs-mode nil)
-
-;; ;;   :config
-;; ;;   (add-hook 'python-mode-hook 'my/python-mode-hook)
-;; ;;   (setq python-indent-offset 4)
-;; ;;   (setq python-indent-guess-indent-offset-verbose nil)
-
-;; ;;   (use-package elpy
-;; ;;     :ensure t
-;; ;;     :init
-;; ;;     (elpy-enable)
-;; ;;     ;; (add-hook 'python-mode-hook 'jedi:setup)
-;; ;;     :config
-;; ;;     (setq elpy-rpc-python-command "python3")
-;; ;;     ;;(setq jedi:complete-on-dot t)
-;; ;;     )
-;; ;;   )
-
-;; (use-package ace-window
-;;   :ensure t
-;;   :config
-;;   (global-set-key (kbd "M-p") 'ace-select-window)
-;;   )
-
-(use-package undo-tree
-  :ensure t
-  :init
-  (global-undo-tree-mode 1)
-  (global-set-key (kbd "C-q") 'undo)
-  (global-set-key (kbd "C-S-q") 'undo-tree-redo)
-  (undo-tree-mode 1)
-  )
-
-(use-package flycheck
-  :ensure t
-  :init
-  (global-flycheck-mode t)
-  :config
-  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
-  )
-
-;; (use-package tex
-;;   :ensure auctex
-;;   :init
-;;   (add-hook 'LaTeX-mode-hook (lambda ()
-;;                                (TeX-fold-mode 1)))
-;;   :config
-;;   ;; to use pdfview with auctex
-;;   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-;;     TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-;;     TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
-
-;;   ;; TODO: fix errors at bottom of page.
-;;   ;; to have the buffer refresh after compilation
-;;   ;;(add-hook 'TeX-after-compilation-finished-functions
-;;   ;;      #'TeX-revert-document-buffer)
-;;   )
-
-;; (use-package org
-;;   :init
-;;   (setq org-directory emacs_p-ORG_DIRECTORY)
-;;   (setq org-agenda-files emacs_p-ORG_AGENDA_FILES)
-
-;;   (global-set-key (kbd "C-c l") 'org-store-link)
-;;   (global-set-key (kbd "C-c a") 'org-agenda)
-;;   (global-set-key (kbd "C-c c") 'org-capture)
-
-;;   (setq org-refile-targets
-;;         '((nil :maxlevel . 3)
-;;           (org-agenda-files :maxlevel . 3)))
-
-;;   (setq org-support-shift-select t)
-
-;;   (setq org-columns-default-format "%50ITEM(Task) %6CLOCKSUM %25TIMESTAMP_IA")
-
-;;   (setq org-todo-keywords
-;;         '((sequence "TODO(t)" "STARTED(s)" "MEETING(m)"  "ISSUE(p)" "INPUTNEEDED(i)" "VERIFY(v)" "|" "SCOPECHANGE(r)" "DONE(d)" "CANCELLED(c)")))
-
-;;   (setq org-tag-alist
-;;         '(("fix" . ?f) ("message" . ?m) ("buy" . ?b) ("read" . ?r)))
-
-;;   (add-hook 'org-mode-hook 'org-indent-mode)
-
-;;   (setq org-capture-templates emacs_p-ORG_TEMPLATES)
-
-;;   :config
-;;   (use-package org-crypt
-;;     :init
-;;     (setq org-tags-exclude-from-inheritance (quote ("crypt")))
-;;     (setq org-crypt-key nil)
-;;     :config
-;;     (org-crypt-use-before-save-magic)
-;;     )
-;;   (use-package epa-file
-;;     :init
-;;     (epa-file-enable)
-;;     )
-;;   )
-
-(use-package magit
-  :ensure t
-  :bind (("C-c g" . magit-status)
-         ("C-c j" . magit-dispatch)
-         ("C-c k" . magit-file-dispatch)
-         ("C-c z" . magit-log-buffer-file)
-         ("C-c b" . magit-blame))
-  )
-
-(use-package delight
-  :ensure t)
-
-(use-package helm
-  :ensure t
-  :delight
-  :bind
-  (("M-x"     . #'helm-M-x))
-  (("C-x C-f" . #'helm-find-files))
-  (("C-x C-b" . #'helm-buffers-list))
-  :config
-  (use-package helm-flyspell :after (helm flyspell))
-  (use-package helm-xref)
-  (use-package helm-rg)
-  (require 'helm-config)
-  (helm-mode t)
-  (helm-autoresize-mode 1)
-  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-  (global-set-key (kbd "C-x b") 'helm-mini))
-
-(use-package yasnippet
-  :ensure t
-  :init
-  (yas-global-mode 1))
-
-(use-package yasnippet-snippets)
 
 (use-package company
   :ensure t
@@ -257,29 +117,145 @@
   (setq company-tooltip-limit 30)
   (setq company-idle-delay .3)
   (setq company-echo-delay 0)
-  ;; (use-package color
-  ;;   :init
-  ;;   ;; small hack too avoid color scheme of company jedi colliding with color scheme of emacs
-  ;;   (require 'color)
-  ;;   (let ((bg (face-attribute 'default :background)))
-  ;;     (custom-set-faces
-  ;;      `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 4)))))
-  ;;      `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-  ;;      `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-  ;;      `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-  ;;      `(company-tooltip-common ((t (:inherit font-lock-constant-face)))))
-  ;;     )
-  ;;   )
+  (use-package color
+    :init
+    ;; small hack too avoid color scheme of company jedi colliding with color scheme of emacs
+    (require 'color)
+    (let ((bg (face-attribute 'default :background)))
+      (custom-set-faces
+       `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 4)))))
+       `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+       `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+       `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+       `(company-tooltip-common ((t (:inherit font-lock-constant-face)))))
+      )
+    )
   )
 
-(use-package company-box
-  :hook (company-mode . company-box-mode)
-  )
+(use-package flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode t)
+  :config
+  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
-;; (defun my/python-mode-hook ()
-;;   "Strange function to make Jedi work with Company."
-;;   (add-to-list 'company-backends 'company-jedi)
-;;   )
+(use-package elpy
+  :ensure t
+  :mode
+  ("\\.py\\'" . python-mode)
+  ("\\.wsgi$" . python-mode)
+  :init
+  (setq-default indent-tabs-mode nil)
+  (defun company-jedi-setup ()
+    (add-to-list 'company-backends 'company-jedi))
+  (add-hook 'python-mode-hook 'company-jedi-setup)
+  (elpy-enable)
+  (use-package py-autopep8
+    :ensure t)
+  (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+  :config
+  (setq python-indent-offset 4)
+  (setq python-indent-guess-indent-offset-verbose nil)
+  (setq jedi:setup-keys t)
+  (setq jedi:complete-on-dot t)
+  (add-hook 'python-mode-hook 'jedi:setup))
+
+(use-package ace-window
+  :ensure t
+  :config
+  (global-set-key (kbd "M-p") 'ace-select-window))
+
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode 1)
+  (global-set-key (kbd "C-q") 'undo)
+  (global-set-key (kbd "C-S-q") 'undo-tree-redo)
+  (undo-tree-mode 1))
+
+(use-package tex
+  :ensure auctex
+  :init
+  (add-hook 'LaTeX-mode-hook (lambda ()
+                               (TeX-fold-mode 1)))
+  :config
+  ;; to use pdfview with auctex
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+    TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+    TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
+  ;; to have the buffer refresh after compilation
+  (add-hook 'TeX-after-compilation-finished-functions
+        #'TeX-revert-document-buffer))
+
+(use-package org
+  :init
+  (setq org-directory emacs_p-ORG_DIRECTORY)
+  (setq org-agenda-files (list org-directory))
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (setq org-refile-targets
+        '((nil :maxlevel . 3)
+          (org-agenda-files :maxlevel . 3)))
+  (setq org-support-shift-select t)
+  (setq org-columns-default-format "%50ITEM(Task) %6CLOCKSUM %25TIMESTAMP_IA")
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "STARTED(s)" "MEETING(m)"  "ISSUE(p)" "INPUTNEEDED(i)" "VERIFY(v)" "|" "SCOPECHANGE(r)" "DONE(d)" "CANCELLED(c)")))
+  (setq org-tag-alist
+        '(("fix" . ?f) ("message" . ?m) ("buy" . ?b) ("read" . ?r)))
+  (add-hook 'org-mode-hook 'org-indent-mode)
+  (setq org-capture-templates emacs_p-ORG_TEMPLATES)
+
+  :config
+  ;; scale 1.0 makes the math symbols hard to read.
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
+  (setq org-pomodoro-play-sounds nil)
+  (use-package org-crypt
+    :init
+    (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+    (setq org-crypt-key nil)
+    :config
+    (org-crypt-use-before-save-magic))
+  (use-package epa-file
+    :init
+    (epa-file-enable)))
+
+
+(use-package magit
+  :ensure t
+  :bind (("C-c g" . magit-status)
+         ("C-c j" . magit-dispatch)
+         ("C-c k" . magit-file-dispatch)
+         ("C-c z" . magit-log-buffer-file)
+         ("C-c b" . magit-blame)))
+
+(use-package delight
+  :ensure t)
+
+(use-package helm
+  :ensure t
+  :delight
+  :bind
+  (("M-x"     . #'helm-M-x))
+  (("C-x C-f" . #'helm-find-files))
+  (("C-x C-b" . #'helm-buffers-list))
+  :init
+  (helm-mode t)
+  :config
+  (use-package helm-flyspell :after (helm flyspell))
+  (use-package helm-xref)
+  (use-package helm-rg)
+  (require 'helm-config)
+  (helm-autoresize-mode 1)
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  (global-set-key (kbd "C-x b") 'helm-mini))
+
+(use-package yasnippet
+  :ensure t
+  :init
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets)
 
 (use-package flyspell
   :commands flyspell-mode
@@ -288,8 +264,7 @@
         ispell-extra-args '("--sug-mode=ultra"))
   (add-hook 'text-mode-hook #'flyspell-mode)
   (add-hook 'org-mode-hook #'flyspell-mode)
-  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-  )
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode))
 
 (use-package spaceline
   :ensure t
@@ -299,7 +274,7 @@
 (use-package spaceline-config
   :ensure spaceline
   :config
-  ;; (spaceline-helm-mode 1)
+  (spaceline-helm-mode 1)
   (spaceline-emacs-theme))
 
 (use-package which-key
@@ -307,16 +282,9 @@
   :init
   (which-key-mode)
   :config
-  ;; Allow C-h to trigger which-key before it is done automatically
-  (setq which-key-show-early-on-C-h t)
-  ;; make sure which-key doesn't show normally but refreshes quickly after it is
-  ;; triggered.
-  (setq which-key-idle-delay 10000)
-  (setq which-key-idle-secondary-delay 0.05)
   (setq which-key-popup-type 'side-window)
   (setq which-key-side-window-location 'right)
-  (setq which-key-side-window-max-width 0.33)
-  )
+  (setq which-key-side-window-max-width 0.33))
 
 (provide 'init)
 ;;; init.el ends here
