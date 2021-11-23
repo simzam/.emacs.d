@@ -11,8 +11,12 @@
 ;; loading file containing personal information
 (load-file "/home/sim/.emacs.d/org_p.el")
 
-(setq custom-file (concat user-emacs-directory "org_p.el"))
-(load custom-file 'noerror)
+;; (setq custom-file (concat user-emacs-directory "org_p.el"))
+;; (load custom-file 'noerror)
+
+(setq custom-file (expand-file-name "org_p.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+  (load custom-file :noerror))
 
 ;; removed keyboard shortcut to avoid accidentally killing emacs
 (global-set-key (kbd "C-x C-c") 'delete-frame)
@@ -28,6 +32,9 @@
 
 ;; wrap lines when in text modes.
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
+
+(setq enable-local-variables :all)
 
 ;; tabs are bad
 (setq-default indent-tabs-mode -1)
@@ -72,8 +79,9 @@
                        gc-cons-threshold)))
 
 
-(defvar emacs_p-find_dag "~/Desktop/.org/dag.org")
-(defvar emacs_p-find_config "~/.emacs.d/init.el")
+;; TODO missing shortcut
+;; (defvar emacs_p-find_dag "~/Desktop/.org/dag.org")
+;; (defvar emacs_p-find_config "~/.emacs.d/init.el")
 
 
 
@@ -109,7 +117,11 @@
   :ensure t
   :config
   (show-smartparens-global-mode +1)
-  (add-hook 'prog-mode-hook 'smartparens-mode))
+  (add-hook 'prog-mode-hook 'smartparens-mode)
+
+  (define-key smartparens-mode-map (kbd "M-(") 'sp-wrap-round)
+  (define-key smartparens-mode-map (kbd "M-[") 'sp-wrap-square)
+  (define-key smartparens-mode-map (kbd "M-{") 'sp-wrap-curly))
 
 (use-package company
   :ensure t
@@ -126,6 +138,8 @@
   (setq company-tooltip-limit 30)
   (setq company-idle-delay .3)
   (setq company-echo-delay 0)
+
+  ;; TODO consider removing, no idea what it does
   (use-package color
     :init
     ;; small hack too avoid color scheme of company jedi colliding with color scheme of emacs
@@ -165,8 +179,8 @@
   :config
   (setq python-indent-offset 4)
   (setq python-indent-guess-indent-offset-verbose nil)
-  (setq jedi:setup-keys t)
-  (setq jedi:complete-on-dot t)
+  (defvar jedi:setup-keys t)
+  (defvar jedi:complete-on-dot t)
   (add-hook 'python-mode-hook 'jedi:setup))
 
 (use-package ace-window
@@ -181,6 +195,14 @@
   (global-set-key (kbd "C-q") 'undo)
   (global-set-key (kbd "C-S-q") 'undo-tree-redo)
   (undo-tree-mode 1))
+
+;; package used in Coursera course
+(use-package sml-mode
+  :ensure t
+  :init
+  (setenv "PATH" (concat "/usr/bin/sml" (getenv "PATH")))
+  (setq exec-path (cons "/usr/bin/sml"  exec-path))
+  )
 
 (use-package tex
   :ensure auctex
@@ -199,8 +221,6 @@
 (use-package org
   :init
   ;; keep personal information out of config
-
-
   (setq org-agenda-files (list org-directory))
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
@@ -212,6 +232,7 @@
           (org-agenda-files :maxlevel . 3)))
 
   (setq org-support-shift-select t)
+
 
   ;; TODO not started using
   ;; (setq org-columns-default-format "%50ITEM(Task) %6CLOCKSUM %25TIMESTAMP_IA")
