@@ -16,7 +16,7 @@
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (require 'startup)
-(require 'org_config)
+;; (require 'org_config)
 (require 'python_config)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -30,7 +30,7 @@
 
 (global-set-key (kbd "<f5>") 'revert-buffer)
 (global-set-key (kbd "C-x C-c") 'delete-frame)
-(global-set-key (kbd "RET") 'newline-and-indent)
+;; (global-set-key (kbd "RET") 'newline-and-indent)
 
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
