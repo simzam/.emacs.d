@@ -69,7 +69,7 @@
 (use-package smartparens
   :ensure t
   :config
-  (show-smartparens-global-mode +1)
+  (show-smartparens-global-mode 1)
   (add-hook 'prog-mode-hook 'smartparens-mode)
   :bind
   ("M-(" . sp-wrap-round)
@@ -91,7 +91,13 @@
 
   (setq company-tooltip-limit 30)
   (setq company-idle-delay .2)
-  (setq company-echo-delay 0)
+  (setq company-echo-delay 0))
+
+(use-package pdf-tools
+  :ensure t
+  :pin manual
+  :config
+  (pdf-tools-install)
   )
 
 (use-package flycheck
