@@ -53,7 +53,8 @@
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
 
   (use-package org-pomodoro
-    :conig
+    :ensure t
+    :config
     (setq org-pomodoro-play-sounds nil))
 
   ;;; add the tag :crypt: too entries for encryption
