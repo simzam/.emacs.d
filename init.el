@@ -16,7 +16,7 @@
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (require 'startup)
-;; (require 'org_config)
+(require 'org_config)
 (require 'python_config)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -35,6 +35,7 @@
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+;; small hack to limit size of auto completion suggestions
 (setq ac-max-width 0.5)
 
 ;; module for a nice collection of smart key bindings
@@ -46,8 +47,8 @@
   ("C-c u" . crux-view-url)
   ("C-c D" . crux-delete-file-and-buffer)
   ("C-c d" . crux-duplicate-current-line-or-region)
-  ("C-c I" . crux-find-user-init-file)
-  )
+  ("M-o" . crux-other-window-or-switch-buffer)
+  ("C-c I" . crux-find-user-init-file))
 
 (use-package multiple-cursors
   :ensure t
@@ -56,7 +57,6 @@
   ("C->" . mc/mark-next-like-this)
   ("C-<" . mc/mark-previous-like-this)
   ("C-c C-<" . mc/mark-all-like-this))
-
 
 ;; quickly marking/unmarking various structures of text
 (use-package expand-region
@@ -114,7 +114,6 @@
   (global-set-key (kbd "C-S-q") 'undo-tree-redo)
   (undo-tree-mode 1))
 
-;; package used in Coursera course
 (use-package sml-mode
   :ensure t
   :init
