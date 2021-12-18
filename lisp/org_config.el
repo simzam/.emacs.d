@@ -10,69 +10,62 @@
 (use-package org
   :delight
   :init
+  ;; TODO: Read up on org-columns
   ;;(setq org-columns-default-format "%50ITEM(Task) %2PRIORITY %10Effort(Effort){:} %10CLOCKSUM")
+
   ;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks
   ;; with 0:00 duration
   (defvar org-clock-out-remove-zero-time-clocks t)
-  ;; Clock out when moving task to a done state
+
+  ;; clock out when moving task to a done state
   (defvar  org-clock-out-when-done t)
 
   ;; depth in hierarchy to look for refile headlines
   (defvar org-refile-targets
-        '((nil :maxlevel . 3)
-          (org-agenda-files :maxlevel . 3)))
+    '((nil :maxlevel . 3)
+      (org-agenda-files :maxlevel . 3)))
 
   (setq org-support-shift-select t)
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "STARTED(s)" "ISSUE(p)" "INPUTNEEDED(i)"
-        | "SCOPECHANGE(r)" "DONE(d)" "CANCELLED(c)")))
+        '((sequence "TODO(t)" "started(s)" "inputneeded(i)" | "DONE(d)")))
 
-  (setq org-tag-alist
-        '(("fix" . ?f) ("message" . ?m) ("buy" . ?b) ("read" . ?r)))
+  ;; (setq org-tag-alist
+        ;; '(("fix" . ?f) ("message" . ?m) ("buy" . ?b) ("read" . ?r)))
 
-  ;; (add-hook 'org-mode-hook 'org-indent-mode)
+  (add-hook 'org-mode-hook 'org-indent-mode)
 
   :config
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
-  ;; (global-set-key (kbd "C-c c") 'org-capture)
+  (global-set-key (kbd "C-c c") 'org-capture)
 
-  ;; (defvar org-capture-templates
-  ;;     '(("t" "Todo" entry (file+headline "~/org/gtd.org" "Tasks")
-  ;;        "* TODO %?\n  %i\n  %a")
-  ;;       ("j" "Journal" entry (file+datetree "~/org/journal.org")
-  ;;        "* %?\nEntered on %U\n  %i\n  %a")))
+  (setq org-directory "~/Documents/.org/")
+  (setq org-default-notes-file (concat org-directory "/notes.org"))
 
-  ;; (setq org-capture-templates
-  ;;     '(("t" "TODO" entry (file "week.org")
-  ;; 	   "* eTODO %? %^G \n  %U" :empty-lines 1)
-  ;; 	  ("s" "Scheduled TODO" entry (file "week.org")
-  ;; 	   "* TODO %? %^G \nSCHEDULED: %^t\n  %U" :empty-lines 1)
-  ;; 	  ("d" "Deadline" entry (file "week.org")
-  ;; 	   "* TODO %? %^G \n DEADLINE: %^t" :empty-lines 1)
-  ;; 	  ("p" "Priority" entry (file "week.org")
-  ;; 	   "* TODO [#A] %? %^G \n  SCHEDULED: %^t")
-  ;; 	  ("j" "Journal" entry (file+datetree ".p.org")
-  ;; 	   "* %? %^G\nEntered on %U\n" :empty-lines 1))
-  ;;     )
+  (setq org-capture-templates
+	'(("t" "week me!" entry (file "~/Documents/.org/week.org")
+	   "* TODO %?\n %i\n %a")
+	  ("j" "journal" entry (file+olp+datetree ".p.org")
+	   "* %? %^G \n\n%U\n" :kill-buffer 1)
+	  ))
 
-  ;; (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
+  ;; increase size of embedded latex compiled written math
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
 
-  ;; (defvar org-pomodoro-play-sounds nil)
+  (use-package org-pomodoro
+    :conig
+    (setq org-pomodoro-play-sounds nil))
 
-  ;; ;;; TODO read up on package
-  ;; (use-package org-crypt
-  ;;   :init
-  ;;   (setq org-tags-exclude-from-inheritance (quote ("crypt")))
-  ;;   (setq org-crypt-key nil)
-  ;;   :config
-  ;;   (org-crypt-use-before-save-magic))
+  ;;; add the tag :crypt: too entries for encryption
+  (use-package org-crypt
+    :init
+    (setq org-tags-exclude-from-inheritance '(quote ("crypt")))
+    ;; org-crypt-key nil means symmetric encryption
+    (setq org-crypt-key nil)
+    (setq auto-save-default nil)
+    :config
+    (org-crypt-use-before-save-magic))
 
-  ;; ;; TODO read up on package
-  ;; (use-package epa-file
-  ;;   :init
-  ;;   (epa-file-enable)
-  ;;   )
   )
 (provide 'org_config)
 ;;; org_config ends here
