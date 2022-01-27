@@ -26,8 +26,8 @@
       (org-agenda-files :maxlevel . 3)))
 
   (setq org-support-shift-select t)
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "started(s)" "inputneeded(i)" | "DONE(d)")))
+  ;; (setq org-todo-keywords
+  ;;       '((sequence "TODO(t)" "started(s)" "inputneeded(i)" | "DONE(d)")))
 
   ;; (setq org-tag-alist
         ;; '(("fix" . ?f) ("message" . ?m) ("buy" . ?b) ("read" . ?r)))
@@ -51,6 +51,8 @@
 
   ;; increase size of embedded latex compiled written math
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
+
+  (setq org-src-fontify-natively t)
 
   (use-package org-pomodoro
     :ensure t

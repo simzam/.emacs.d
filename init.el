@@ -1,4 +1,4 @@
-;;; init.el --- An Emacs configuration file.
+;; init.el --- An Emacs configuration file.
 ;; Author:  simzam
 ;; Keywords: config, emacs
 ;;; Commentary:
@@ -42,28 +42,29 @@
 (use-package crux
   :ensure t
   :bind
-  ("C-a" . crux-move-beginning-of-line)
-  ("C-k" . crux-smart-kill-line)
-  ("C-c u" . crux-view-url)
-  ("C-c D" . crux-delete-file-and-buffer)
-  ("C-c d" . crux-duplicate-current-line-or-region)
-  ("M-o" . crux-other-window-or-switch-buffer)
-  ("C-c I" . crux-find-user-init-file))
+  (("C-a" . crux-move-beginning-of-line)
+   ("C-k" . crux-smart-kill-line)
+   ("C-c u" . crux-view-url)
+   ("C-c D" . crux-delete-file-and-buffer)
+   ("C-c d" . crux-duplicate-current-line-or-region)
+   ("M-o" . crux-other-window-or-switch-buffer)
+   ("C-c I" . crux-find-user-init-file))
+)
 
 (use-package multiple-cursors
   :ensure t
   :bind
-  ("C-S-c C-S-c" . mc/edit-lines)
-  ("C->" . mc/mark-next-like-this)
-  ("C-<" . mc/mark-previous-like-this)
-  ("C-c C-<" . mc/mark-all-like-this))
+  (("C-S-c C-S-c" . mc/edit-lines)
+   ("C->" . mc/mark-next-like-this)
+   ("C-<" . mc/mark-previous-like-this)
+   ("C-c C-<" . mc/mark-all-like-this)))
 
 ;; quickly marking/unmarking various structures of text
 (use-package expand-region
   :ensure t
   :bind
-  ("C-=" . er/expand-region)
-  ("C-M-=" . er/contract-region))
+  (("C-=" . er/expand-region)
+  ("C-M-=" . er/contract-region)))
 
 ;; package for smart handling of delimiters ("(","[", etc.)
 (use-package smartparens
@@ -72,9 +73,17 @@
   (show-smartparens-global-mode 1)
   (add-hook 'prog-mode-hook 'smartparens-mode)
   :bind
-  ("M-(" . sp-wrap-round)
+  (("M-(" . sp-wrap-round)
   ("M-[" . sp-wrap-square)
-  ("M-{" . sp-wrap-curly))
+  ("M-{" . sp-wrap-curly)))
+
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("s-p" . projectile-command-map)
+              ("C-c p" . projectile-command-map)))
 
 (use-package company
   :ensure t
@@ -98,7 +107,7 @@
   :pin manual
   :config
   (pdf-tools-install)
-  )
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode))
 
 (use-package flycheck
   :ensure t
@@ -163,6 +172,11 @@
   (use-package helm-xref)
   (use-package helm-rg)
   (helm-autoresize-mode 1)
+
+  (setq helm-display-function 'helm-display-buffer-in-own-frame
+        helm-display-buffer-reuse-frame t
+        helm-use-undecorated-frame-option t)
+
   (global-set-key (kbd "M-y") 'helm-show-kill-ring)
   (global-set-key (kbd "C-x b") 'helm-mini)
   (set-face-attribute 'helm-selection nil
@@ -199,6 +213,7 @@
   :ensure t
   :init
   (which-key-mode)
+  :diminish which-key-mode
   :config
   (setq which-key-popup-type 'side-window)
   (setq which-key-side-window-location 'right)

@@ -56,9 +56,7 @@
 ;; Autocomplete/Jedi Setup
 (use-package jedi
   :ensure t
-
   :init
-  (setq jedi:setup-keys t)
   (setq jedi:use-shortcuts t)
   (setq jedi:complete-on-dot t)
   ;; show function signatures in mini-buffer instead of popup
@@ -70,7 +68,8 @@
 
 (use-package pytest
   :ensure t
-  :bind ("C-c C-y" . pytest-module))
+  :bind
+  (("C-c C-y" . pytest-module)))
 
 
 ;; Set ipython as the python interpreter
