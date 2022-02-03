@@ -1,4 +1,4 @@
-;; init.el --- An Emacs configuration file.
+;;; init.el --- An Emacs configuration file.
 ;; Author:  simzam
 ;; Keywords: config, emacs
 ;;; Commentary:
