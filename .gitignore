@@ -1,7 +1,5 @@
-/session.1014f9f3399023b37715752914083689400000012260065
+*session*
 *.bak
-/session.101c2d82741e2f38ed15875521719378700000021640068
-/session.10378941a07c51329715797233461646500000014620065
 /auto-save-list/
 /ac-comphist.dat
 /backups/
@@ -11,3 +9,10 @@
 /recentf
 /request/
 /emacs_config.org
+/snippets/
+*mc-lists*
+*#*
+*image-dired*
+*url*
+*personal/personal_information.el
+/projectile-bookmarks.eld

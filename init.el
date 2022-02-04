@@ -21,12 +21,19 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(setq inhibit-startup-screen t
+(setq-default inhibit-startup-screen t
       initial-scratch-message nil
       ring-bell-function 'ignore
       make-backup-files nil
       indent-tabs-mode -1)
-(setq tool-bar-mode -1)
+(tool-bar-mode -1)
+
+(setq-default tab-width 4
+	      make-backup-files nil
+	      indent-tabs-mode nil
+	      show-trailing-whitespace t
+	      visible-bell nil)
+
 
 (global-set-key (kbd "<f5>") 'revert-buffer)
 (global-set-key (kbd "C-x C-c") 'delete-frame)
@@ -36,7 +43,7 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; small hack to limit size of auto completion suggestions
-(setq ac-max-width 0.5)
+;;(setq ac-max-width 0.5)
 
 ;; module for a nice collection of smart key bindings
 (use-package crux
@@ -94,6 +101,8 @@
   (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
   (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
   (add-hook 'after-init-hook 'global-company-mode)
+
+  ;;
 
   ;; put most often used completions at top of list
   (setq company-transformers '(company-sort-by-occurrence))
