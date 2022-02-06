@@ -8,8 +8,6 @@
 ;;; Code:
 
 ;; color theme (load early to avoid blinking emacs window)
-(load-theme 'gruber-darker t)
-
 (add-to-list 'load-path (expand-file-name "personal" user-emacs-directory))
 (require 'personal_information)
 (require 'custom-set)
@@ -18,6 +16,12 @@
 (require 'startup)
 (require 'org_config)
 (require 'python_config)
+(require 'web_dev)
+
+(use-package gruber-darker-theme
+  :ensure t
+  :config
+  (load-theme 'gruber-darker t))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -102,9 +106,6 @@
   (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
   (add-hook 'after-init-hook 'global-company-mode)
 
-  ;;
-
-  ;; put most often used completions at top of list
   (setq company-transformers '(company-sort-by-occurrence))
 
   (setq company-tooltip-limit 30)

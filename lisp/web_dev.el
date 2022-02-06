@@ -28,5 +28,6 @@
   (set-face-attribute 'web-mode-current-column-highlight-face nil
                       :background "gold")
   )
+
 (provide 'web_dev)
 ;;; web_dev.el ends here
