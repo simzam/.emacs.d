@@ -37,7 +37,7 @@
  '(org-pomodoro-keep-killed-pomodoro-time t)
  '(org-pomodoro-length 15)
  '(package-selected-packages
-   '(helm-spotify-plus nov equake diminish gruber-darker auto-virtualenv htmlize projectile helm-bind-key haskell-mode rainbow-delimiters sphinx-doc gruber-darker-theme default-font-presets ess sml sml-mode company-jedi company-ycmd py-autopep8 async async-await lsp-mode auto-complete-config goto-last-change zenburn-theme yasnippet-snippets yasnippet-classic-snippets which-key virtualenv use-package undo-tree spaceline smartparens slime pdf-tools panda-theme org-pomodoro org magit jupyter iedit helm-xref helm-rg helm-flyspell flycheck-pyflakes expand-region elpy delight crux company-box benchmark-init auto-complete auctex ahungry-theme ace-window))
+   '(eslint-fix flymake-eslint xref-js2 helm-spotify-plus nov equake diminish gruber-darker auto-virtualenv htmlize projectile helm-bind-key haskell-mode rainbow-delimiters sphinx-doc gruber-darker-theme default-font-presets ess sml sml-mode company-jedi company-ycmd py-autopep8 async async-await lsp-mode auto-complete-config goto-last-change zenburn-theme yasnippet-snippets yasnippet-classic-snippets which-key virtualenv use-package undo-tree spaceline smartparens slime pdf-tools panda-theme org-pomodoro org magit jupyter iedit helm-xref helm-rg helm-flyspell flycheck-pyflakes expand-region elpy delight crux company-box benchmark-init auto-complete auctex ahungry-theme ace-window))
  '(pdf-view-display-size 'fit-page)
  '(pdf-view-use-imagemagick t)
  '(pdf-view-use-scaling t)

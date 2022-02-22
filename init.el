@@ -7,7 +7,7 @@
 
 ;;; Code:
 
-;; color theme (load early to avoid blinking emacs window)qq
+;; color theme (load early to avoid blinking emacs window)
 (add-to-list 'load-path (expand-file-name "personal" user-emacs-directory))
 (require 'personal_information)
 (require 'custom-set)
