@@ -37,7 +37,7 @@
  '(org-pomodoro-keep-killed-pomodoro-time t)
  '(org-pomodoro-length 15)
  '(package-selected-packages
-   '(gruber-darker auto-virtualenv htmlize projectile helm-bind-key haskell-mode rainbow-delimiters sphinx-doc gruber-darker-theme default-font-presets ess sml sml-mode company-jedi company-ycmd py-autopep8 async async-await lsp-mode auto-complete-config goto-last-change zenburn-theme yasnippet-snippets yasnippet-classic-snippets which-key virtualenv use-package undo-tree spaceline smartparens slime pdf-tools panda-theme org-pomodoro org magit jupyter iedit helm-xref helm-rg helm-flyspell flycheck-pyflakes expand-region elpy delight crux company-box benchmark-init auto-complete auctex ahungry-theme ace-window))
+   '(helm-spotify-plus nov equake diminish gruber-darker auto-virtualenv htmlize projectile helm-bind-key haskell-mode rainbow-delimiters sphinx-doc gruber-darker-theme default-font-presets ess sml sml-mode company-jedi company-ycmd py-autopep8 async async-await lsp-mode auto-complete-config goto-last-change zenburn-theme yasnippet-snippets yasnippet-classic-snippets which-key virtualenv use-package undo-tree spaceline smartparens slime pdf-tools panda-theme org-pomodoro org magit jupyter iedit helm-xref helm-rg helm-flyspell flycheck-pyflakes expand-region elpy delight crux company-box benchmark-init auto-complete auctex ahungry-theme ace-window))
  '(pdf-view-display-size 'fit-page)
  '(pdf-view-use-imagemagick t)
  '(pdf-view-use-scaling t)
@@ -53,6 +53,7 @@
  '(company-tooltip ((t (:inherit default :background "#3327346735a6"))))
  '(company-tooltip-common ((t (:inherit font-lock-constant-face))))
  '(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+ '(equake-buffer-face ((t (:inherit 'default :family "DejaVu Sans Mono" :background "#000022" :foreground "white"))))
  '(org-block ((t (:inherit (fixed-pitch default) :extend t))))
  '(org-code ((t (:inherit (default fixed-pitch))))))
 (provide 'custom-set)

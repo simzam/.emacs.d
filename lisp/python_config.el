@@ -19,7 +19,7 @@
 
 (use-package elpy
   :ensure t
-  :delight t
+  :delight python-mode
   :mode
   ("\\.py\\'" . python-mode)
   ("\\.wsgi$" . python-mode)

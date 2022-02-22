@@ -38,16 +38,40 @@
 	      show-trailing-whitespace t
 	      visible-bell nil)
 
-
+(global-unset-key (kbd "C-z"))
 (global-set-key (kbd "<f5>") 'revert-buffer)
 (global-set-key (kbd "C-x C-c") 'delete-frame)
-;; (global-set-key (kbd "RET") 'newline-and-indent)
+(global-set-key (kbd "RET") 'newline-and-indent)
 
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; small hack to limit size of auto completion suggestions
-;;(setq ac-max-width 0.5)
+(global-flycheck-mode)
+
+(use-package equake
+  :ensure t
+  ;; some examples of optional settings follow:
+  :custom
+  ;; set width a bit less than full-screen (prevent 'overflow' on multi-monitor):
+  (equake-size-width 0.99)
+  ;; set distinct face for Equake: white foreground with dark blue background, and different font:
+  :custom-face
+  (equake-buffer-face
+   ((t (:inherit 'default :family "DejaVu Sans Mono" :background "#000022" :foreground "white"))))
+  :config
+  ;; prevent accidental frame closure:
+  (advice-add #'save-buffers-kill-terminal :before-while #'equake-kill-emacs-advice)
+  ;; binding to restore last Equake tab when viewing a non-Equake buffer
+  (global-set-key (kbd "C-M-^") #'equake-restore-last-etab)
+  (global-set-key (kbd "C-z") 'equake-invoke)
+  ;; set default shell
+  (setq equake-default-shell 'shell)
+  ;; set list of available shells
+  (setq equake-available-shells
+   '("shell"
+     "vterm"
+     "rash"
+     "eshell")))
 
 ;; module for a nice collection of smart key bindings
 (use-package crux
@@ -193,6 +217,16 @@
                     :background "purple"
                     :foreground "white"))
 
+(use-package helm-spotify-plus
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c s s") 'helm-spotify-plus)  ;; s for SEARCH
+  (global-set-key (kbd "C-c s f") 'helm-spotify-plus-next)
+  (global-set-key (kbd "C-c s b") 'helm-spotify-plus-previous)
+  (global-set-key (kbd "C-c s p") 'helm-spotify-plus-play)
+  (global-set-key (kbd "C-c s g") 'helm-spotify-plus-pause) ;; g cause you know.. C-g stop things :)
+)
+
 (use-package yasnippet
   :ensure t
   :init
@@ -216,6 +250,7 @@
 (use-package spaceline-config
   :ensure spaceline
   :config
+  (spaceline-toggle-minor-modes-off)
   (spaceline-helm-mode 1)
   (spaceline-emacs-theme))
 
