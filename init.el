@@ -1,27 +1,31 @@
-;;; init.el --- An Emacs configuration file.
+; init.el --- An Emacs configuration file.
 ;; Author:  simzam
 ;; Keywords: config, emacs
 ;;; Commentary:
 
-;; ;;
+;; ;; introduce boon, evil package
 
 ;;; Code:
 
 ;; color theme (load early to avoid blinking emacs window)
-(add-to-list 'load-path (expand-file-name "personal" user-emacs-directory))
-(require 'personal_information)
-(require 'custom-set)
-
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(require 'startup)
-(require 'org_config)
-(require 'python_config)
-(require 'web_dev)
-
 (use-package gruber-darker-theme
   :ensure t
   :config
   (load-theme 'gruber-darker t))
+
+;; each environment has separate config file in a folder called 'lisp'
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(load-library "startup")
+(load-library "org_config")
+(load-library "python_config")
+;; (load-library "web_dev")
+(load-library "latex_config")
+
+;; load file containing personal information and custom set variables.
+(add-to-list 'load-path (expand-file-name "personal" user-emacs-directory))
+(load-library "personal_information")
+(load-library "custom-set")
+
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -36,17 +40,22 @@
 	      make-backup-files nil
 	      indent-tabs-mode nil
 	      show-trailing-whitespace t
-	      visible-bell nil)
+	      visible-bell nil
+          calendar-week-start-day 1)
 
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "<f5>") 'revert-buffer)
 (global-set-key (kbd "C-x C-c") 'delete-frame)
 (global-set-key (kbd "RET") 'newline-and-indent)
 
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+(global-visual-line-mode 1)
+(global-hl-line-mode 1)
+(show-smartparens-global-mode 1)
 (global-flycheck-mode)
+(global-company-mode)
+(global-linum-mode)
 
 (use-package equake
   :ensure t
@@ -106,7 +115,7 @@
   :ensure t
   :config
   (show-smartparens-global-mode 1)
-  (add-hook 'prog-mode-hook 'smartparens-mode)
+  ;; (add-hook 'prog-mode-hook 'smartparens-mode)
   :bind
   (("M-(" . sp-wrap-round)
   ("M-[" . sp-wrap-square)
@@ -136,12 +145,34 @@
   (setq company-idle-delay .2)
   (setq company-echo-delay 0))
 
+(use-package smartparens
+  :init
+  (bind-key "C-M-f" #'sp-forward-sexp smartparens-mode-map)
+  (bind-key "C-M-b" #'sp-backward-sexp smartparens-mode-map)
+  (bind-key "C-)" #'sp-forward-slurp-sexp smartparens-mode-map)
+  (bind-key "C-(" #'sp-backward-slurp-sexp smartparens-mode-map)
+  (bind-key "M-)" #'sp-forward-barf-sexp smartparens-mode-map)
+  (bind-key "M-(" #'sp-backward-barf-sexp smartparens-mode-map)
+  (bind-key "C-S-s" #'sp-splice-sexp)
+  (bind-key "C-M-<backspace>" #'backward-kill-sexp)
+  (bind-key "C-M-S-<SPC>" (lambda () (interactive) (mark-sexp -1)))
+
+  :config
+  (smartparens-global-mode t)
+
+  (sp-pair "'" nil :actions :rem)
+  (sp-pair "`" nil :actions :rem)
+  (setq sp-highlight-pair-overlay nil))
+
 (use-package pdf-tools
   :ensure t
   :pin manual
   :config
   (pdf-tools-install)
-  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode))
+  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+  (define-key pdf-view-mode-map (kbd "C-r") 'isearch-backward)
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  (setq-default pdf-view-display-size 'fit-page))
 
 (use-package flycheck
   :ensure t
@@ -150,10 +181,10 @@
   :config
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
-(use-package ace-window
-  :ensure t
-  :config
-  (global-set-key (kbd "M-p") 'ace-select-window))
+;; (use-package ace-window
+;;   :ensure t
+;;   :config
+;;   (global-set-key (kbd "M-p") 'ace-select-window))
 
 (use-package undo-tree
   :ensure t
@@ -161,24 +192,16 @@
   (global-undo-tree-mode 1)
   (global-set-key (kbd "C-q") 'undo)
   (global-set-key (kbd "C-S-q") 'undo-tree-redo)
-  (undo-tree-mode 1))
-
-(use-package sml-mode
-  :ensure t
-  :init
-  (setenv "PATH" (concat "/usr/bin/sml" (getenv "PATH")))
-  (setq exec-path (cons "/usr/bin/sml"  exec-path))
-  )
-
-(use-package tex
-  :ensure auctex
-  :init
-  (add-hook 'LaTeX-mode-hook (lambda () (TeX-fold-mode 1)))
+  (undo-tree-mode 1)
   :config
-  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-    TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
-  (add-hook 'TeX-after-compilation-finished-functions
-        #'TeX-revert-document-buffer))
+  (with-eval-after-load 'undo-tree
+  (setq undo-tree-auto-save-history nil)))
+
+;; (use-package sml-mode
+;;   :ensure t
+;;   :init
+;;   (setenv "PATH" (concat "/usr/bin/sml" (getenv "PATH")))
+;;   (setq exec-path (cons "/usr/bin/sml"  exec-path)))
 
 (use-package magit
   :ensure t
@@ -266,3 +289,4 @@
 
 (provide 'init)
 ;;; init.el ends here
+(put 'downcase-region 'disabled nil)

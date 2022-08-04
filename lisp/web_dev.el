@@ -33,8 +33,8 @@
   :ensure t
   :mode
   ("\\.js\\'" . js2-mode)
-  :init
-  (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+  ;;; :init
+  ;;; (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
   :config
   (define-key js-mode-map (kbd "M-.") nil)
 )
@@ -53,7 +53,28 @@
           #'(lambda ()
               (define-key js2-mode-map "\C-ci" 'js-doc-insert-function-doc)
               (define-key js2-mode-map "@" 'js-doc-insert-tag)))
-  )
+)
+
+(use-package ac-js2
+  :ensure t
+)
+
+(use-package flymake-eslint :ensure t :defer 10
+  :custom ;; add glasses-mode to bolden capitals in CamelCase here. Could also be done elsewhere.
+  (glasses-face (quote bold))
+  (glasses-original-separator "")
+  (glasses-separate-capital-groups t)
+  (glasses-separate-parentheses-p nil)
+  (glasses-separator "")
+  :config
+  (add-hook 'js-mode-hook (lambda () (flymake-eslint-enable)(flymake-mode -1)(flycheck-mode 1)(glasses-mode 1)))
+  (add-hook 'js2-mode-hook (lambda () (flymake-eslint-enable)(flymake-mode -1)(flycheck-mode 1)(glasses-mode 1)))
+  (custom-set-variables
+   '(help-at-pt-timer-delay 0.3)
+   '(help-at-pt-display-when-idle '(flymake-overlay))))
+(use-package flymake-diagnostic-at-point :ensure t :defer 20
+  :config
+  (flymake-diagnostic-at-point-mode t))
 
 ;; (use-package lsp-mode
 ;;   :ensure t

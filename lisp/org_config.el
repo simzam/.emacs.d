@@ -8,11 +8,9 @@
 
 ;;; Code:
 (use-package org
+  :ensure t
   :delight
   :init
-  ;; TODO: Read up on org-columns
-  ;;(setq org-columns-default-format "%50ITEM(Task) %2PRIORITY %10Effort(Effort){:} %10CLOCKSUM")
-
   ;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks
   ;; with 0:00 duration
   (defvar org-clock-out-remove-zero-time-clocks t)
@@ -26,12 +24,6 @@
       (org-agenda-files :maxlevel . 3)))
 
   (setq org-support-shift-select t)
-  ;; (setq org-todo-keywords
-  ;;       '((sequence "TODO(t)" "started(s)" "inputneeded(i)" | "DONE(d)")))
-
-  ;; (setq org-tag-alist
-        ;; '(("fix" . ?f) ("message" . ?m) ("buy" . ?b) ("read" . ?r)))
-
   (add-hook 'org-mode-hook 'org-indent-mode)
 
   :config
@@ -41,7 +33,6 @@
 
   (setq org-directory "~/Documents/.org/")
   (setq org-default-notes-file (concat org-directory "/notes.org"))
-
   (setq org-capture-templates
 	'(("t" "week me!" entry (file "~/Documents/.org/week.org")
 	   "* TODO %?\n %i\n %a")
@@ -51,8 +42,14 @@
 
   ;; increase size of embedded latex compiled written math
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.4))
-
   (setq org-src-fontify-natively t)
+
+  (setq org-latex-pdf-process
+      '("pdflatex -interaction nonstopmode -output-directory %o %f"
+        "bibtex %b"
+        "pdflatex -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -interaction nonstopmode -output-directory %o %f"))
+
 
   (use-package org-pomodoro
     :ensure t
