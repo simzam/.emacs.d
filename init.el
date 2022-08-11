@@ -61,14 +61,17 @@
 (setq-default inhibit-startup-screen t
       initial-scratch-message nil
       ring-bell-function 'ignore
-      make-backup-files nil
+      visible-bell nil
       indent-tabs-mode -1
       tab-width 4
+      ;; No auto backup of files to avoid clutter
 	  make-backup-files nil
 	  indent-tabs-mode nil
 	  show-trailing-whitespace t
-	  visible-bell nil
-      calendar-week-start-day 1)
+      ;; The week starts on Monday
+      calendar-week-start-day 1
+      ;; Collect custom options in a separate file to avoid clutter
+      custom-file "~/.emacs.d/personal/custom-set.el")
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -230,7 +233,7 @@
   (global-set-key (kbd "C-x b") 'helm-mini)
   (set-face-attribute 'helm-selection nil
                     :background "purple"
-                    :foreground "white"))
+                   c :foreground "white"))
 
 (use-package yasnippet
   :ensure t
@@ -294,20 +297,5 @@
 ;;      "vterm"
 ;;      "rash"
 ;;      "eshell")))
-
-
 (provide 'init)
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(auto-package-update cmake-mode zenburn-theme yasnippet-snippets yasnippet-classic-snippets xref-js2 which-key web-mode virtualenvwrapper virtualenv use-package undo-tree sphinx-doc spaceline sml-mode smartparens slime rainbow-delimiters pythonic pytest py-autopep8 projectile pdf-tools panda-theme org-pomodoro org nov multiple-cursors magit lsp-mode jupyter js-doc iter2 iedit htmlize helm-xref helm-spotify-plus helm-rg helm-flyspell helm-bind-key haskell-mode gruber-darker-theme goto-last-change go-snippets flymake-jslint flymake-grammarly flymake-go flymake-eslint flymake-diagnostic-at-point flycheck-pyflakes expand-region esup ess eslint-fix equake elpy django-snippets diminish delight default-font-presets dash-functional crux company-ycmd company-jedi company-go company-box company-auctex benchmark-init auto-virtualenv auto-dictionary auto-complete auctex-latexmk ahungry-theme ace-window ac-js2)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
