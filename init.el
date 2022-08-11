@@ -92,6 +92,17 @@
 ;; Always show line number for all frames
 (global-linum-mode)
 
+(use-package auto-package-update
+  ;; I keep forgetting to update packages. Auto update!
+  :if (not (daemonp))
+  :custom
+  (auto-package-update-interval 7) ;; in days
+  (auto-package-update-prompt-before-update t)
+  (auto-package-update-delete-old-versions t)
+  (auto-package-update-hide-results t)
+  :config
+  (auto-package-update-maybe))
+
 (use-package crux
   ;; Provides clean shortcuts for common tasks
   :ensure t
