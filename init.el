@@ -3,21 +3,20 @@
 ;; Keywords: config, emacs
 ;;; Commentary:
 
-;; ;; TODO introduce evil package LATER
+;; ;; TODO introduce evil package
 
 ;;; Code:
 ;;  configures main functionality and loads external config files
 
-;; Add config files from separate folder into load-path
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-(add-to-list 'load-path (expand-file-name "personal" user-emacs-directory))
 
-(require 'package)
-(setq package-enable-at-startup nil)
-(setq package-archives ())
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; Melpa packages
+;; Select the folder to store packages
+(setq package-user-dir (expand-file-name "elpa" user-emacs-directory)
+      package-archives
+      '(("gnu"   . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")))
 
+;; ConfigurePackageManager
 (unless (bound-and-true-p package--initialized)
   (setq package-enable-at-startup nil)          ; To prevent initializing twice
   (package-initialize))
@@ -27,36 +26,45 @@
 (eval-and-compile
   (setq use-package-verbose (not (bound-and-true-p byte-compile-current-file))))
 
-;; Ensures that use-package is installed.
+;; Install use-package if not installed
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
-  (package-install 'use-package)
-  (eval-when-compile (require 'use-package)))
+  (package-install 'use-package))
+
+(eval-and-compile
+  (setq use-package-always-ensure t)
+  (setq use-package-expand-minimally t)
+  (setq use-package-enable-imenu-support t))
+
+(eval-when-compile
+  (require 'use-package)
+  (require 'bind-key))
 
 (use-package auto-package-update
   ;; Keeps the packages updated
-  :ensure t
   :if (not (daemonp))
   :custom
-  (auto-package-update-interval 7) ;; in days
+  (auto-package-update-interval 7) ;; In days
   (auto-package-update-prompt-before-update t)
   (auto-package-update-delete-old-versions t)
   (auto-package-update-hide-results t)
   :config
   (auto-package-update-maybe))
 
-;;(load-library "org_config")
-;;(load-library "python_config")
-;; (load-library "web_dev")
-;;(load-library "latex_config")
-;;(load-library "personal_information")
-;;(load-library "custom-set")
+;; Add folders for configuration files
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "personal" user-emacs-directory))
 
-(use-package gruber-darker-theme
-  ;; color theme
-  :ensure t
-  :config
-  (load-theme 'gruber-darker t))
+;; ;TODO: Figure out how to load onlyif file exists.
+(load-library "org_config")
+(load-library "python_config")
+(load-library "web_dev")
+(load-library "latex_config")
+(load-library "personal_information")
+(load-library "custom-set")
+
+;; Color theme
+(use-package gruber-darker-theme :config (load-theme 'gruber-darker t))
 
 (setq-default inhibit-startup-screen t
       initial-scratch-message nil
@@ -92,20 +100,8 @@
 ;; Always show line number for all frames
 (global-linum-mode)
 
-(use-package auto-package-update
-  ;; I keep forgetting to update packages. Auto update!
-  :if (not (daemonp))
-  :custom
-  (auto-package-update-interval 7) ;; in days
-  (auto-package-update-prompt-before-update t)
-  (auto-package-update-delete-old-versions t)
-  (auto-package-update-hide-results t)
-  :config
-  (auto-package-update-maybe))
-
 (use-package crux
   ;; Provides clean shortcuts for common tasks
-  :ensure t
   :bind
   (("C-a" . crux-move-beginning-of-line)
    ("C-k" . crux-smart-kill-line)
@@ -117,7 +113,6 @@
 )
 
 (use-package multiple-cursors
-  :ensure t
   :bind
   (("C-S-c C-S-c" . mc/edit-lines)
    ("C->" . mc/mark-next-like-this)
@@ -127,14 +122,13 @@
 ;; TODO use in for quick region selection latex python
 (use-package expand-region
   ;; quickly mark/unmark regions of text
-  :ensure t
   :bind
   (("C-," . er/expand-region)
    ("C-M-," . er/contract-region)))
 
 ;; TODO: add package
 ;; (use-package projectile
-;;   :ensure t
+;;
 ;;   :init
 ;;   (projectile-mode +1)
 ;;   :bind (:map projectile-mode-map
@@ -142,7 +136,6 @@
 ;;               ("C-c p" . projectile-command-map)))
 
 (use-package company
-  :ensure t
   :delight
   :init
   (global-company-mode)
@@ -160,7 +153,7 @@
 ;; TODO fix keybindings and sp pair nil?
 (use-package smartparens
   ;; package for smart handling and navigation of delimiters ("(","[", etc.)
-  :ensure t
+
   :init
   (bind-key "C-M-f" #'sp-forward-sexp smartparens-mode-map)
   (bind-key "C-M-b" #'sp-backward-sexp smartparens-mode-map)
@@ -177,14 +170,12 @@
   (sp-pair "'" nil :actions :rem)
   (sp-pair "`" nil :actions :rem)
   (setq sp-highlight-pair-overlay nil)
-
   :bind
   (("M-(" . sp-wrap-round)
   ("M-[" . sp-wrap-square)
   ("M-{" . sp-wrap-curly)))
 
 (use-package pdf-tools
-  :ensure t
   :pin manual
   :config
   (pdf-tools-install)
@@ -196,7 +187,6 @@
 
 ;; TODO how does
 (use-package flycheck
-  :ensure t
   :init
   (global-flycheck-mode t))
   ;; :config
@@ -204,7 +194,6 @@
   ;; (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
 (use-package undo-tree
-  :ensure t
   :init
   (global-undo-tree-mode 1)
   :config
@@ -212,7 +201,6 @@
     (setq undo-tree-auto-save-history nil)))
 
 (use-package magit
-  :ensure t
   :bind
   (("C-c g" . magit-status)
    ("C-c j" . magit-dispatch)
@@ -221,11 +209,10 @@
    ("C-c b" . magit-blame)))
 
 ;; TODO what does this do
-(use-package delight :ensure t)
+(use-package delight )
 
 ;; TODO configure helm
 (use-package helm
-  :ensure t
   :delight
   :bind
   (("M-x"     . #'helm-M-x))
@@ -235,8 +222,8 @@
   (helm-mode t)
   :config
   ;; (use-package helm-flyspell :after (helm flyspell))
-  (use-package helm-xref :ensure t)
-  (use-package helm-rg :ensure t)
+  (use-package helm-xref )
+  (use-package helm-rg )
   (helm-autoresize-mode 1)
   (setq helm-display-function 'helm-display-buffer-in-own-frame
         helm-use-undecorated-frame-option t)
@@ -244,16 +231,14 @@
   (global-set-key (kbd "C-x b") 'helm-mini)
   (set-face-attribute 'helm-selection nil
                     :background "purple"
-                   c :foreground "white"))
+                    :foreground "white"))
 
 (use-package yasnippet
-  :ensure t
   :init
   (yas-global-mode 1)
   (use-package yasnippet-snippets))
 
 (use-package spaceline
-  :ensure t
   :config
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
 
@@ -265,7 +250,6 @@
   (spaceline-emacs-theme))
 
 (use-package which-key
-  :ensure t
   :init
   (which-key-mode)
   :diminish which-key-mode
@@ -276,7 +260,6 @@
 
 (use-package helm-spotify-plus
   ;; Control Spotify from Emacs
-  :ensure t
   :bind
   (("C-c s s" . helm-spotify-plus)
    ("C-c s f" . helm-spotify-plus-next)
@@ -285,7 +268,7 @@
    ("C-c s g" . helm-spotify-plus-pause)))
 
 ;; (use-package equake
-;;   :ensure t
+;;
 ;;   ;; some examples of optional settings follow:
 ;;   :custom
 ;;   ;; set width a bit less than full-screen (prevent 'overflow' on multi-monitor):
