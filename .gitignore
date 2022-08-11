@@ -16,3 +16,7 @@
 *url*
 *personal/personal_information.el
 /projectile-bookmarks.eld
+/.cache/
+/eshell/
+/.last-package-update-day
+/equake-persistent-display
