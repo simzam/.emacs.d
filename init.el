@@ -135,55 +135,65 @@
 ;;               ("s-p" . projectile-command-map)
 ;;               ("C-c p" . projectile-command-map)))
 
+
+;TODO: Add doc for mode
 (use-package company
   :delight
   :init
   (global-company-mode)
   :config
-  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "n") 'company-select-next-or-abort)
+  (define-key company-active-map (kbd "p") 'company-select-previous-or-abort)
   (add-hook 'after-init-hook 'global-company-mode)
 
   (setq company-transformers '(company-sort-by-occurrence))
-
   (setq company-tooltip-limit 30)
   (setq company-idle-delay .2)
   (setq company-echo-delay 0))
 
-;; TODO fix keybindings and sp pair nil?
 (use-package smartparens
   ;; package for smart handling and navigation of delimiters ("(","[", etc.)
-
-  :init
-  (bind-key "C-M-f" #'sp-forward-sexp smartparens-mode-map)
-  (bind-key "C-M-b" #'sp-backward-sexp smartparens-mode-map)
-  (bind-key "C-)" #'sp-forward-slurp-sexp smartparens-mode-map)
-  (bind-key "C-(" #'sp-backward-slurp-sexp smartparens-mode-map)
-  (bind-key "M-)" #'sp-forward-barf-sexp smartparens-mode-map)
-  (bind-key "M-(" #'sp-backward-barf-sexp smartparens-mode-map)
-  (bind-key "C-S-s" #'sp-splice-sexp)
-  (bind-key "C-M-<backspace>" #'backward-kill-sexp)
-  (bind-key "C-M-S-<SPC>" (lambda () (interactive) (mark-sexp -1)))
-
-  :config
-  (smartparens-global-mode t)
-  (sp-pair "'" nil :actions :rem)
-  (sp-pair "`" nil :actions :rem)
-  (setq sp-highlight-pair-overlay nil)
+  :hook (prog-mode . smartparens-mode)
+  :diminish smartparens-mode
   :bind
-  (("M-(" . sp-wrap-round)
-  ("M-[" . sp-wrap-square)
-  ("M-{" . sp-wrap-curly)))
-
-(use-package pdf-tools
-  :pin manual
+  (:map smartparens-mode-map
+        ("C-M-f" . sp-forward-sexp)
+        ("C-M-b" . sp-backward-sexp)
+        ("C-M-a" . sp-backward-down-sexp)
+        ("C-M-e" . sp-up-sexp)
+        ("C-M-w" . sp-copy-sexp)
+        ("C-M-k" . sp-change-enclosing)
+        ("M-k" . sp-kill-sexp)
+        ("C-M-<backspace>" . sp-splice-sexp-killing-backward)
+        ("C-S-<backspace>" . sp-splice-sexp-killing-around)
+        ("C-]" . sp-select-next-thing-exchange))
+  :custom
+  (sp-escape-quotes-after-insert nil)
   :config
-  (pdf-tools-install)
-  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-  (define-key pdf-view-mode-map (kbd "C-r") 'isearch-backward)
-  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
-  (setq-default pdf-view-display-size 'fit-page))
+  ;; Stop pairing single quotes in elisp
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+  (sp-local-pair 'org-mode "[" nil :actions nil))
 
+(use-package pdf-tools-install
+  :ensure pdf-tools
+  :no-require t
+  :mode "\\.pdf\\'"
+  :commands (pdf-loader-install)
+  :custom
+  (TeX-view-program-selection '((output-pdf "pdf-tools")))
+  (TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view")))
+  :hook
+  (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :config
+  (linum-mode -1) ;; Line numbers doesn't make sense for PDFs.
+  (pdf-loader-install)
+  (setq-default pdf-view-display-size 'fit-page)
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  :bind
+  (:map pdf-view-mode-map
+        ("C-s" . isearch-forward)
+        ("C-r" . isearch-backward)
+  ))
 
 ;; TODO how does
 (use-package flycheck
