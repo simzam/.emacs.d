@@ -8,7 +8,6 @@
 
 ;;; Code:
 (use-package org
-  :ensure t
   :delight
   :init
   ;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks
@@ -51,21 +50,19 @@
         "pdflatex -interaction nonstopmode -output-directory %o %f"))
 
 
-  (use-package org-pomodoro
-    :ensure t
+
+  ;;; add the tag :crypt: too entries for encryption
+   (setq org-tags-exclude-from-inheritance '(quote ("crypt")))
+   ;; org-crypt-key nil means symmetric encryption
+   (defvar org-crypt-key nil)
+   (setq auto-save-default nil)
+   :config
+   (org-crypt-use-before-save-magic))
+
+   (use-package org-pomodoro
+    :after org-mode
     :config
     (setq org-pomodoro-play-sounds nil))
 
-  ;;; add the tag :crypt: too entries for encryption
-  (use-package org-crypt
-    :init
-    (setq org-tags-exclude-from-inheritance '(quote ("crypt")))
-    ;; org-crypt-key nil means symmetric encryption
-    (setq org-crypt-key nil)
-    (setq auto-save-default nil)
-    :config
-    (org-crypt-use-before-save-magic))
-
-  )
 (provide 'org_config)
-;;; org_config ends here
+;;; org_config.el ends here

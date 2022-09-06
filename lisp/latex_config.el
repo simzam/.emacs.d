@@ -24,6 +24,7 @@
   :ensure t)
 
 (use-package tex
+  :commands (TeX-revert-document-buffer)
   :ensure auctex
   :mode ("\\.tex\\'" . latex-mode)
   :config (progn
@@ -42,8 +43,7 @@
 	    (add-hook 'LaTeX-mode-hook
 		      (lambda ()
 			(reftex-mode t)
-			(flyspell-mode t)))
-	    ))
+			(flyspell-mode t)))))
 
 (provide 'latex_config)
-;;; latex.el ends here
+;;; latex_config.el ends here

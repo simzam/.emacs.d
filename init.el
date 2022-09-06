@@ -8,15 +8,13 @@
 ;;; Code:
 ;;  configures main functionality and loads external config files
 
-
-;; Melpa packages
-;; Select the folder to store packages
+;; Select the folder to store packages and add package repositories
 (setq package-user-dir (expand-file-name "elpa" user-emacs-directory)
       package-archives
       '(("gnu"   . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")))
 
-;; ConfigurePackageManager
+;TODO: What does this do
 (unless (bound-and-true-p package--initialized)
   (setq package-enable-at-startup nil)          ; To prevent initializing twice
   (package-initialize))
@@ -83,25 +81,24 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; Tool bar waste space
+;; Tool bar waste space.
 (tool-bar-mode -1)
-
-;; Indent when pressing RET
+;; Indent when pressing RET.
 (global-set-key (kbd "RET") 'newline-and-indent)
-;; Trailing whitespace are never welcome
+;; Trailing whitespace are never welcome.
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; Wrap text if text moves outside frame width
+;; Wrap text if text moves outside frame width.
 (global-visual-line-mode 1)
 
-;; Highlight current line in active windoes
+;; Highlight current line in active window.
 (global-hl-line-mode 1)
 
-;; Always show line number for all frames
-(global-linum-mode)
+;; Always show line numbers when programming.
+(add-hook 'prog-mode-hook '(linum-mode -1))
 
 (use-package crux
-  ;; Provides clean shortcuts for common tasks
+  ;; Provides shortcuts for common tasks
   :bind
   (("C-a" . crux-move-beginning-of-line)
    ("C-k" . crux-smart-kill-line)
@@ -109,8 +106,7 @@
    ("C-c D" . crux-delete-file-and-buffer)
    ("C-c d" . crux-duplicate-current-line-or-region)
    ("M-o" . crux-other-window-or-switch-buffer)
-   ("C-c I" . crux-find-user-init-file))
-)
+   ("C-c I" . crux-find-user-init-file)))
 
 (use-package multiple-cursors
   :bind
@@ -126,34 +122,29 @@
   (("C-," . er/expand-region)
    ("C-M-," . er/contract-region)))
 
-;; TODO: add package
-;; (use-package projectile
-;;
-;;   :init
-;;   (projectile-mode +1)
-;;   :bind (:map projectile-mode-map
-;;               ("s-p" . projectile-command-map)
-;;               ("C-c p" . projectile-command-map)))
-
-
-;TODO: Add doc for mode
 (use-package company
-  :delight
-  :init
-  (global-company-mode)
+  :diminish company-mode
+  :hook ((prog-mode LaTeX-mode latex-mode ess-r-mode org-mode) . company-mode)
+  :commands (company-complete-common)
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-tooltip-align-annotations t)
+  (company-require-match 'never)
+  ;; Don't use company in the following modes
+  (company-global-modes '(not shell-mode eaf-mode))
+  ;; Trigger completion immediately.
+  (company-idle-delay 0.1)
+  ;; Number the candidates (use M-1, M-2 etc to select completions).
+  (company-show-numbers t)
   :config
-  (define-key company-active-map (kbd "n") 'company-select-next-or-abort)
-  (define-key company-active-map (kbd "p") 'company-select-previous-or-abort)
-  (add-hook 'after-init-hook 'global-company-mode)
-
+  (global-company-mode 1)
   (setq company-transformers '(company-sort-by-occurrence))
-  (setq company-tooltip-limit 30)
-  (setq company-idle-delay .2)
   (setq company-echo-delay 0))
 
 (use-package smartparens
   ;; package for smart handling and navigation of delimiters ("(","[", etc.)
   :hook (prog-mode . smartparens-mode)
+  :commands (sp-local-pair)
   :diminish smartparens-mode
   :bind
   (:map smartparens-mode-map
@@ -175,6 +166,7 @@
   (sp-local-pair 'org-mode "[" nil :actions nil))
 
 (use-package pdf-tools-install
+  :defer t
   :ensure pdf-tools
   :no-require t
   :mode "\\.pdf\\'"
@@ -185,23 +177,44 @@
   :hook
   (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
-  (linum-mode -1) ;; Line numbers doesn't make sense for PDFs.
+  ;; (linum-mode -1) ;; Line numbers doesn't make sense for PDFs.
   (pdf-loader-install)
   (setq-default pdf-view-display-size 'fit-page)
   (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
   :bind
-  (:map pdf-view-mode-map
-        ("C-s" . isearch-forward)
-        ("C-r" . isearch-backward)
-  ))
+  (("C-s" . isearch-forward)
+   ("C-r" . isearch-backward)))
 
-;; TODO how does
 (use-package flycheck
+  :defer t
+  :diminish
+  :hook (after-init . global-flycheck-mode)
+  :commands (flycheck-add-mode)
+  :custom
+  (flycheck-global-modes
+   '(not outline-mode diff-mode shell-mode eshell-mode term-mode))
+  (flycheck-emacs-lisp-load-path 'inherit)
+  (flycheck-indication-mode (if (display-graphic-p) 'right-fringe 'right-margin))
   :init
-  (global-flycheck-mode t))
-  ;; :config
-  ;; TODO check this
-  ;; (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
+  (if (display-graphic-p)
+      (use-package flycheck-posframe
+        :custom-face
+        (flycheck-posframe-face ((t (:foreground ,(face-foreground 'success)))))
+        (flycheck-posframe-info-face ((t (:foreground ,(face-foreground 'success)))))
+        :hook (flycheck-mode . flycheck-posframe-mode)
+        :custom
+        (flycheck-posframe-position 'window-bottom-left-corner)
+        (flycheck-posframe-border-width 3)
+        (flycheck-posframe-inhibit-functions
+         '((lambda (&rest _) (bound-and-true-p company-backend)))))
+    (use-package flycheck-pos-tip
+      :defines flycheck-pos-tip-timeout
+      :hook (flycheck-mode . flycheck-pos-tip-mode)
+      :custom (flycheck-pos-tip-timeout 30)))
+  :config
+  (when (fboundp 'define-fringe-bitmap)
+    (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
+      [16 48 112 240 112 48 16] nil nil 'center)))
 
 (use-package undo-tree
   :init
@@ -224,24 +237,22 @@
 ;; TODO configure helm
 (use-package helm
   :delight
+  :commands (helm-autoresize-mode)
   :bind
   (("M-x"     . #'helm-M-x))
   (("C-x C-f" . #'helm-find-files))
   (("C-x C-b" . #'helm-buffers-list))
+  (("M-y" .     #'helm-show-kill-ring))
+  (("C-x b" .   #'helm-mini))
   :init
   (helm-mode t)
   :config
-  ;; (use-package helm-flyspell :after (helm flyspell))
+  (use-package helm-flyspell :after (helm flyspell))
   (use-package helm-xref )
   (use-package helm-rg )
   (helm-autoresize-mode 1)
   (setq helm-display-function 'helm-display-buffer-in-own-frame
-        helm-use-undecorated-frame-option t)
-  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-  (global-set-key (kbd "C-x b") 'helm-mini)
-  (set-face-attribute 'helm-selection nil
-                    :background "purple"
-                    :foreground "white"))
+        helm-use-undecorated-frame-option t))
 
 (use-package yasnippet
   :init
@@ -250,16 +261,23 @@
 
 (use-package spaceline
   :config
-  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+  (use-package spaceline-config
+    :ensure spaceline
+    :config
+    (spaceline-toggle-minor-modes-off)
+    (spaceline-helm-mode 1)
+    (spaceline-emacs-theme)
+    (format-time-string "%H:%M")
+    (spaceline-define-segment date
+                              "The current date."
+                              (format-time-string "%h %d"))
+    ;(spaceline-toggle-time-on)
+    (spaceline-emacs-theme 'date 'time))
 
-(use-package spaceline-config
-  :ensure spaceline
-  :config
-  (spaceline-toggle-minor-modes-off)
-  (spaceline-helm-mode 1)
-  (spaceline-emacs-theme))
+    (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
 
 (use-package which-key
+  ;; Possible keyboard shortcuts popup window
   :init
   (which-key-mode)
   :diminish which-key-mode
@@ -277,29 +295,34 @@
    ("C-c s p" . helm-spotify-plus-play)
    ("C-c s g" . helm-spotify-plus-pause)))
 
-;; (use-package equake
-;;
-;;   ;; some examples of optional settings follow:
-;;   :custom
-;;   ;; set width a bit less than full-screen (prevent 'overflow' on multi-monitor):
-;;   (equake-size-width 0.99)
-;;   ;; set distinct face for Equake: white foreground with dark blue background, and different font:
-;;   :custom-face
-;;   (equake-buffer-face
-;;    ((t (:inherit 'default :family "DejaVu Sans Mono" :background "#000022" :foreground "white"))))
-;;   :config
-;;   ;; prevent accidental frame closure:
-;;   (advice-add #'save-buffers-kill-terminal :before-while #'equake-kill-emacs-advice)
-;;   ;; binding to restore last Equake tab when viewing a non-Equake buffer
-;;   (global-set-key (kbd "C-M-^") #'equake-restore-last-etab)
-;;   (global-set-key (kbd "C-z") 'equake-invoke)
-;;   ;; set default shell
-;;   (setq equake-default-shell 'shell)
-;;   ;; set list of available shells
-;;   (setq equake-available-shells
-;;    '("shell"
-;;      "vterm"
-;;      "rash"
-;;      "eshell")))
+(use-package equake
+  ;; some examples of optional settings follow:
+  :custom
+  ;; set width a bit less than full-screen (prevent 'overflow' on multi-monitor):
+  (equake-size-width 0.99)
+  ;; set distinct face for Equake: white foreground with dark blue background, and different font:
+  :custom-face
+  (equake-buffer-face
+   ((t (:inherit 'default :family "DejaVu Sans Mono" :background "#000022" :foreground "white"))))
+  :config
+  ;; prevent accidental frame closure:
+  (advice-add #'save-buffers-kill-terminal :before-while #'equake-kill-emacs-advice)
+  ;; binding to restore last Equake tab when viewing a non-Equake buffer
+  (global-set-key (kbd "C-M-^") #'equake-restore-last-etab)
+  (global-set-key (kbd "C-z") 'equake-invoke)
+  ;; set default shell
+  (setq equake-default-shell 'shell)
+  ;; set list of available shells
+  (setq equake-available-shells
+   '("shell"
+     "vterm"
+     "rash"
+     "eshell")))
+
+(use-package go-mode
+  :mode "\\.go\\'"
+  :hook (before-save . gofmt-before-save))
+  ;;:custom (gofmt-command "goimports"))
+
 (provide 'init)
 ;;; init.el ends here
